@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "SonTab",
+  "version": "0.1.0",
+  "description": "탭을 한 곳에 모아 메모리를 아끼는 가벼운 탭 관리자",
+  "permissions": ["tabs", "storage", "unlimitedStorage"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_title": "탭 모으기" }
+}
