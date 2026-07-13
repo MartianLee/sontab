@@ -51,10 +51,19 @@
   }
 
   async function restoreGroup(group: TabGroup) {
+    const failed = new Set<string>();
     for (const tab of group.tabs) {
-      await openTab(tab.url);
+      if (!(await openTab(tab.url))) failed.add(tab.id);
     }
-    await update(removeGroup(groups, group.id));
+    if (failed.size === 0) {
+      await update(removeGroup(groups, group.id));
+      return;
+    }
+    let next = groups;
+    for (const tab of group.tabs) {
+      if (!failed.has(tab.id)) next = removeTab(next, group.id, tab.id);
+    }
+    await update(next);
   }
 </script>
 

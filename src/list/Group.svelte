@@ -33,10 +33,12 @@
     if (draft !== group.name) onRename(draft);
   }
 
-  const dateLabel = new Date(group.createdAt).toLocaleString('ko-KR', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
+  const dateLabel = $derived(
+    new Date(group.createdAt).toLocaleString('ko-KR', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }),
+  );
 </script>
 
 <section class="group">
