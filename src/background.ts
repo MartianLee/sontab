@@ -3,8 +3,18 @@ import type { SavedTab } from './types';
 
 const LIST_PATH = 'list.html';
 
+let collecting = false;
+
 chrome.action.onClicked.addListener((activeTab) => {
-  void collectWindow(activeTab.windowId);
+  if (collecting) return;
+  collecting = true;
+  collectWindow(activeTab.windowId)
+    .catch((error) => {
+      console.error('sontab: 탭 수집 실패', error);
+    })
+    .finally(() => {
+      collecting = false;
+    });
 });
 
 async function collectWindow(windowId: number): Promise<void> {
