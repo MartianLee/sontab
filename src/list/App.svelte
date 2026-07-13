@@ -9,8 +9,12 @@
     removeTab,
     renameGroup,
     toggleLock,
+    addGroup,
+    createGroup,
   } from '../storage';
+  import { exportText, parseImport } from '../importExport';
   import Group from './Group.svelte';
+  import ImportExport from './ImportExport.svelte';
 
   let groups = $state<TabGroup[]>([]);
 
@@ -65,6 +69,16 @@
     }
     await update(next);
   }
+
+  function handleImport(text: string): number {
+    const parsed = parseImport(text);
+    let next = groups;
+    for (const tabs of [...parsed].reverse()) {
+      next = addGroup(next, createGroup(tabs, Date.now()));
+    }
+    if (parsed.length > 0) void update(next);
+    return parsed.length;
+  }
 </script>
 
 <main>
@@ -72,6 +86,8 @@
     <h1>SonTab</h1>
     <p class="summary">탭 {countTabs(groups)}개 · 그룹 {groups.length}개</p>
   </header>
+
+  <ImportExport onExport={() => exportText(groups)} onImport={handleImport} />
 
   {#if groups.length === 0}
     <p class="empty">저장된 탭이 없습니다. 툴바의 SonTab 아이콘을 눌러 탭을 모아보세요.</p>
