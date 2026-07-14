@@ -44,7 +44,7 @@
 
 <style>
   .import-export {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-5);
   }
   .toggle,
   .buttons button {

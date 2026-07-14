@@ -69,7 +69,7 @@
     color: var(--text-faint);
     font-size: 16px;
     cursor: pointer;
-    padding: 0 4px;
+    padding: 0 var(--space-1);
     visibility: hidden;
   }
   .tab-item:hover .delete {
