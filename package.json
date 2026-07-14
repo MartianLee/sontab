@@ -7,9 +7,11 @@
     "dev": "vite build --watch",
     "build": "vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "icons": "node scripts/build-icons.mjs",
     "test": "vitest run"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "@tsconfig/svelte": "^5.0.8",
     "@types/chrome": "^0.2.2",

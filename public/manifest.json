@@ -5,5 +5,17 @@
   "description": "탭을 한 곳에 모아 메모리를 아끼는 가벼운 탭 관리자",
   "permissions": ["tabs", "storage", "unlimitedStorage"],
   "background": { "service_worker": "background.js", "type": "module" },
-  "action": { "default_title": "탭 모으기" }
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "탭 모으기",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  }
 }
