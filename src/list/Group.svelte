@@ -81,17 +81,17 @@
 
 <style>
   .group {
-    background: #fff;
-    border: 1px solid #e4e7ec;
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
   }
   header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
   }
   .name {
     background: none;
@@ -106,24 +106,24 @@
     font-weight: 600;
   }
   .meta {
-    color: #667085;
-    font-size: 12px;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
   }
   .actions {
     margin-left: auto;
     display: flex;
-    gap: 6px;
+    gap: var(--space-2);
   }
   .actions button {
-    font-size: 12px;
-    padding: 3px 8px;
-    border: 1px solid #d0d5dd;
-    border-radius: 6px;
-    background: #fff;
+    font-size: var(--text-xs);
+    padding: 3px var(--space-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
     cursor: pointer;
   }
   .actions button:hover:not(:disabled) {
-    background: #f2f4f7;
+    background: var(--surface-hover);
   }
   .actions button:disabled {
     opacity: 0.4;

@@ -1,0 +1,58 @@
+:root {
+  color-scheme: light dark;
+
+  /* 색 — B안 페이퍼 아카이브 (라이트) */
+  --bg: #faf8f5;
+  --surface: #fffdfa;
+  --surface-hover: #f3efe8;
+  --border: #e7e1d8;
+  --border-strong: #d5cdc0;
+  --text: #26221b;
+  --text-muted: #7d756a;
+  --text-faint: #a09a8e;
+  --accent: #23684d;
+  --danger: #b42318;
+  --success: #1f7a4d;
+  --focus: #23684d;
+
+  /* 간격 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* 반경 */
+  --radius-sm: 7px;
+  --radius-md: 12px;
+
+  /* 타이포 */
+  --font-sans: system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-lg: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161815;
+    --surface: #1e211c;
+    --surface-hover: #262a24;
+    --border: #34382f;
+    --border-strong: #454a3f;
+    --text: #e9e7e1;
+    --text-muted: #a09a8e;
+    --text-faint: #7d756a;
+    --accent: #6fbf95;
+    --danger: #f2705d;
+    --success: #4cc38a;
+    --focus: #6fbf95;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}

@@ -30,12 +30,12 @@
   .tab-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 8px;
-    border-radius: 6px;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
   }
   .tab-item:hover {
-    background: #f2f4f7;
+    background: var(--surface-hover);
   }
   .favicon {
     width: 16px;
@@ -44,7 +44,7 @@
   }
   .placeholder {
     display: inline-block;
-    background: #d5d9e0;
+    background: var(--border-strong);
     border-radius: 4px;
   }
   .title {
@@ -54,7 +54,7 @@
     border: none;
     padding: 0;
     font: inherit;
-    color: #1a56db;
+    color: var(--accent);
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -66,7 +66,7 @@
   .delete {
     background: none;
     border: none;
-    color: #98a2b3;
+    color: var(--text-faint);
     font-size: 16px;
     cursor: pointer;
     padding: 0 4px;
@@ -76,10 +76,10 @@
     visibility: visible;
   }
   .delete:hover {
-    color: #d92d20;
+    color: var(--danger);
   }
   .delete:disabled {
-    color: #d0d5dd;
+    color: var(--border-strong);
     cursor: default;
   }
 </style>

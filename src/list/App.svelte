@@ -113,33 +113,33 @@
 <style>
   :global(body) {
     margin: 0;
-    background: #f8f9fb;
-    color: #101828;
-    font-family: system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
-    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
   }
   main {
     max-width: 760px;
     margin: 0 auto;
-    padding: 24px 16px 64px;
+    padding: var(--space-5) var(--space-4) var(--space-6);
   }
   .page-header {
     display: flex;
     align-items: baseline;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
   }
   h1 {
-    font-size: 20px;
+    font-size: var(--text-lg);
     margin: 0;
   }
   .summary {
-    color: #667085;
+    color: var(--text-muted);
     margin: 0;
   }
   .empty {
-    color: #667085;
+    color: var(--text-muted);
     text-align: center;
-    padding: 48px 0;
+    padding: var(--space-6) 0;
   }
 </style>

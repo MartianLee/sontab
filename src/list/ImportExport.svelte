@@ -48,36 +48,38 @@
   }
   .toggle,
   .buttons button {
-    font-size: 12px;
-    padding: 4px 10px;
-    border: 1px solid #d0d5dd;
-    border-radius: 6px;
-    background: #fff;
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
     cursor: pointer;
   }
   .toggle:hover,
   .buttons button:hover {
-    background: #f2f4f7;
+    background: var(--surface-hover);
   }
   .panel {
-    margin-top: 8px;
+    margin-top: var(--space-2);
   }
   textarea {
     width: 100%;
     box-sizing: border-box;
-    font: 12px/1.5 ui-monospace, monospace;
-    border: 1px solid #d0d5dd;
-    border-radius: 6px;
-    padding: 8px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2);
   }
   .buttons {
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
     align-items: center;
-    margin-top: 6px;
+    margin-top: var(--space-2);
   }
   .message {
-    font-size: 12px;
-    color: #027a48;
+    font-size: var(--text-xs);
+    color: var(--success);
   }
 </style>
