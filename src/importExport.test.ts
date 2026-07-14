@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { TabGroup } from './types';
-import { exportText, parseImport } from './importExport';
+import { exportText, parseImport, parseKoreanDate, parseOneTabHtml } from './importExport';
 
 describe('exportText', () => {
   it('URL | 제목 형식으로 그룹 사이 빈 줄을 넣어 출력한다', () => {
@@ -58,5 +58,67 @@ describe('parseImport', () => {
     const parsed = parseImport(exportText(groups));
     expect(parsed[0][0].url).toBe('https://a.com/path?q=1');
     expect(parsed[0][0].title).toBe('제목 A');
+  });
+});
+
+const FIXTURE = `<!DOCTYPE html><html><body><div id="tabGroupsDiv">
+<div class="tabGroup">
+  <div class="tabGroupHeader"><div class="tabGroupTitleText">탭 2개</div>
+  <div class="createdDate">생성일 2026. 7. 3., 오후 8:12:12</div></div>
+  <div class="tabList">
+    <div class="tab"><a class="tabLink" href="https://a.com/?x=1&amp;y=2">A &amp; B</a></div>
+    <div class="tab"><a class="tabLink" href="https://b.com/">B</a></div>
+  </div>
+</div>
+<div class="tabGroup">
+  <div class="tabGroupHeader"><div class="tabGroupTitleText">아침 리서치</div>
+  <div class="createdDate">생성일 2026. 6. 28., 오전 12:05:51</div></div>
+  <div class="tabList">
+    <div class="tab"><a class="tabLink" href="https://c.com/">C</a></div>
+  </div>
+</div>
+<div class="tabGroup">
+  <div class="tabGroupHeader"><div class="tabGroupTitleText">탭 0개</div>
+  <div class="createdDate">Created 7/3/2026, 8:12:12 PM</div></div>
+  <div class="tabList"></div>
+</div>
+</div></body></html>`;
+
+describe('parseKoreanDate', () => {
+  it('오후 시각을 파싱한다', () => {
+    expect(parseKoreanDate('생성일 2026. 7. 3., 오후 8:12:12')).toBe(
+      new Date(2026, 6, 3, 20, 12, 12).getTime(),
+    );
+  });
+
+  it('오전 12시는 0시로 파싱한다', () => {
+    expect(parseKoreanDate('생성일 2026. 6. 28., 오전 12:05:51')).toBe(
+      new Date(2026, 5, 28, 0, 5, 51).getTime(),
+    );
+  });
+
+  it('다른 로캘은 null을 반환한다', () => {
+    expect(parseKoreanDate('Created 7/3/2026, 8:12:12 PM')).toBeNull();
+  });
+});
+
+describe('parseOneTabHtml', () => {
+  it('그룹/탭/생성일을 파싱하고 빈 그룹은 제외한다', () => {
+    const groups = parseOneTabHtml(FIXTURE);
+    expect(groups).toHaveLength(2);
+    expect(groups[0].tabs.map((t) => t.url)).toEqual(['https://a.com/?x=1&y=2', 'https://b.com/']);
+    expect(groups[0].tabs[0].title).toBe('A & B');
+    expect(groups[0].createdAt).toBe(new Date(2026, 6, 3, 20, 12, 12).getTime());
+    expect(groups[0].tabs[0].id).toBeTruthy();
+  });
+
+  it('"탭 N개" 자동 제목은 이름 없음으로, 실제 이름은 보존한다', () => {
+    const groups = parseOneTabHtml(FIXTURE);
+    expect(groups[0].name).toBe('');
+    expect(groups[1].name).toBe('아침 리서치');
+  });
+
+  it('tabGroup 블록이 없으면 빈 배열을 반환한다', () => {
+    expect(parseOneTabHtml('<html><body>hello</body></html>')).toEqual([]);
   });
 });

@@ -2,9 +2,11 @@
   let {
     onExport,
     onImport,
+    onImportHtml,
   }: {
     onExport: () => string;
     onImport: (text: string) => number;
+    onImportHtml: (html: string) => { groups: number; tabs: number };
   } = $props();
 
   let open = $state(false);
@@ -19,6 +21,18 @@
   function handleImport() {
     const added = onImport(text);
     message = added > 0 ? `그룹 ${added}개를 가져왔습니다.` : '가져올 URL이 없습니다.';
+  }
+
+  async function handleFile(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const res = onImportHtml(await file.text());
+    message =
+      res.groups > 0
+        ? `그룹 ${res.groups}개(탭 ${res.tabs}개)를 가져왔습니다.`
+        : 'OneTab 그룹을 찾지 못했습니다.';
+    input.value = '';
   }
 </script>
 
@@ -36,6 +50,10 @@
       <div class="buttons">
         <button onclick={handleExport}>현재 목록 내보내기</button>
         <button onclick={handleImport}>텍스트 가져오기</button>
+        <label class="file-btn">
+          OneTab HTML 파일 가져오기
+          <input type="file" accept=".html,text/html" onchange={handleFile} />
+        </label>
         {#if message}<span class="message">{message}</span>{/if}
       </div>
     </div>
@@ -81,5 +99,19 @@
   .message {
     font-size: var(--text-xs);
     color: var(--success);
+  }
+  .file-btn {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+  }
+  .file-btn:hover {
+    background: var(--surface-hover);
+  }
+  .file-btn input {
+    display: none;
   }
 </style>

@@ -12,7 +12,7 @@
     addGroup,
     createGroup,
   } from '../storage';
-  import { exportText, parseImport } from '../importExport';
+  import { exportText, parseImport, parseOneTabHtml } from '../importExport';
   import Group from './Group.svelte';
   import ImportExport from './ImportExport.svelte';
 
@@ -83,6 +83,23 @@
     }
     return parsed.length;
   }
+
+  function handleImportHtml(html: string): { groups: number; tabs: number } {
+    const parsed = parseOneTabHtml(html);
+    if (parsed.length > 0) {
+      void update((current) => {
+        let next = current;
+        for (const g of [...parsed].reverse()) {
+          next = addGroup(next, { ...createGroup(g.tabs, g.createdAt ?? Date.now()), name: g.name });
+        }
+        return next;
+      });
+    }
+    return {
+      groups: parsed.length,
+      tabs: parsed.reduce((sum, g) => sum + g.tabs.length, 0),
+    };
+  }
 </script>
 
 <main>
@@ -91,7 +108,7 @@
     <p class="summary">탭 {countTabs(groups)}개 · 그룹 {groups.length}개</p>
   </header>
 
-  <ImportExport onExport={() => exportText(groups)} onImport={handleImport} />
+  <ImportExport onExport={() => exportText(groups)} onImport={handleImport} onImportHtml={handleImportHtml} />
 
   {#if groups.length === 0}
     <p class="empty">저장된 탭이 없습니다. 툴바의 SonTab 아이콘을 눌러 탭을 모아보세요.</p>
