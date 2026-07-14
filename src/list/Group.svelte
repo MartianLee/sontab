@@ -73,6 +73,7 @@
         {tab}
         onRestore={() => onRestoreTab(tab.id)}
         onDelete={() => onDeleteTab(tab.id)}
+        disabled={group.locked}
       />
     {/each}
   </ul>

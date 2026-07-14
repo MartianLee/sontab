@@ -5,10 +5,12 @@
     tab,
     onRestore,
     onDelete,
+    disabled = false,
   }: {
     tab: SavedTab;
     onRestore: () => void;
     onDelete: () => void;
+    disabled?: boolean;
   } = $props();
 </script>
 
@@ -21,7 +23,7 @@
   <button class="title" title={tab.url} onclick={onRestore}>
     {tab.title || tab.url}
   </button>
-  <button class="delete" title="삭제" onclick={onDelete}>×</button>
+  <button class="delete" title="삭제" onclick={onDelete} disabled={disabled}>×</button>
 </li>
 
 <style>
@@ -75,5 +77,9 @@
   }
   .delete:hover {
     color: #d92d20;
+  }
+  .delete:disabled {
+    color: #d0d5dd;
+    cursor: default;
   }
 </style>

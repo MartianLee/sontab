@@ -32,7 +32,8 @@
     return () => chrome.storage.onChanged.removeListener(listener);
   });
 
-  async function update(next: TabGroup[]) {
+  async function update(mutate: (current: TabGroup[]) => TabGroup[]) {
+    const next = mutate(await loadGroups());
     groups = next;
     await persistGroups(next);
   }
@@ -50,7 +51,7 @@
     const tab = group.tabs.find((t) => t.id === tabId);
     if (!tab) return;
     if (await openTab(tab.url)) {
-      await update(removeTab(groups, group.id, tabId));
+      await update((g) => removeTab(g, group.id, tabId));
     }
   }
 
@@ -59,24 +60,27 @@
     for (const tab of group.tabs) {
       if (!(await openTab(tab.url))) failed.add(tab.id);
     }
-    if (failed.size === 0) {
-      await update(removeGroup(groups, group.id));
-      return;
-    }
-    let next = groups;
-    for (const tab of group.tabs) {
-      if (!failed.has(tab.id)) next = removeTab(next, group.id, tab.id);
-    }
-    await update(next);
+    await update((current) => {
+      if (failed.size === 0) return removeGroup(current, group.id);
+      let next = current;
+      for (const tab of group.tabs) {
+        if (!failed.has(tab.id)) next = removeTab(next, group.id, tab.id);
+      }
+      return next;
+    });
   }
 
   function handleImport(text: string): number {
     const parsed = parseImport(text);
-    let next = groups;
-    for (const tabs of [...parsed].reverse()) {
-      next = addGroup(next, createGroup(tabs, Date.now()));
+    if (parsed.length > 0) {
+      void update((current) => {
+        let next = current;
+        for (const tabs of [...parsed].reverse()) {
+          next = addGroup(next, createGroup(tabs, Date.now()));
+        }
+        return next;
+      });
     }
-    if (parsed.length > 0) void update(next);
     return parsed.length;
   }
 </script>
@@ -96,11 +100,11 @@
       <Group
         {group}
         onRestoreTab={(tabId) => restoreTab(group, tabId)}
-        onDeleteTab={(tabId) => update(removeTab(groups, group.id, tabId))}
+        onDeleteTab={(tabId) => update((g) => removeTab(g, group.id, tabId))}
         onRestoreGroup={() => restoreGroup(group)}
-        onDeleteGroup={() => update(removeGroup(groups, group.id))}
-        onRename={(name) => update(renameGroup(groups, group.id, name))}
-        onToggleLock={() => update(toggleLock(groups, group.id))}
+        onDeleteGroup={() => update((g) => removeGroup(g, group.id))}
+        onRename={(name) => update((g) => renameGroup(g, group.id, name))}
+        onToggleLock={() => update((g) => toggleLock(g, group.id))}
       />
     {/each}
   {/if}
