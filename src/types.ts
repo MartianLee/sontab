@@ -3,6 +3,7 @@ export interface SavedTab {
   url: string;
   title: string;
   favIconUrl?: string;
+  starred?: boolean;
 }
 
 export interface TabGroup {

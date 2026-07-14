@@ -36,6 +36,17 @@ export function countTabs(groups: TabGroup[]): number {
   return groups.reduce((sum, g) => sum + g.tabs.length, 0);
 }
 
+export function toggleStar(groups: TabGroup[], groupId: string, tabId: string): TabGroup[] {
+  return groups.map((g) =>
+    g.id === groupId
+      ? {
+          ...g,
+          tabs: g.tabs.map((t) => (t.id === tabId ? { ...t, starred: !t.starred } : t)),
+        }
+      : g,
+  );
+}
+
 export async function loadGroups(): Promise<TabGroup[]> {
   const data = await chrome.storage.local.get(KEY);
   return (data[KEY] as TabGroup[] | undefined) ?? [];

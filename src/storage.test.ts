@@ -8,6 +8,7 @@ import {
   removeTab,
   renameGroup,
   toggleLock,
+  toggleStar,
 } from './storage';
 
 function fixture(): TabGroup[] {
@@ -96,5 +97,25 @@ describe('renameGroup / toggleLock', () => {
 describe('countTabs', () => {
   it('전체 탭 수를 센다', () => {
     expect(countTabs(fixture())).toBe(3);
+  });
+});
+
+describe('toggleStar', () => {
+  it('별표를 켜고 끈다', () => {
+    let next = toggleStar(fixture(), 'g1', 't1');
+    expect(next[0].tabs[0].starred).toBe(true);
+    next = toggleStar(next, 'g1', 't1');
+    expect(next[0].tabs[0].starred).toBe(false);
+  });
+
+  it('잠긴 그룹에서도 동작한다', () => {
+    const next = toggleStar(fixture(), 'g2', 't3');
+    expect(next[1].tabs[0].starred).toBe(true);
+  });
+
+  it('원본을 변경하지 않는다', () => {
+    const groups = fixture();
+    toggleStar(groups, 'g1', 't1');
+    expect(groups[0].tabs[0].starred).toBeUndefined();
   });
 });
