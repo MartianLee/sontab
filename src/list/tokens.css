@@ -13,6 +13,7 @@
   --accent: #23684d;
   --danger: #b42318;
   --success: #1f7a4d;
+  --star: #f59f00;
   --focus: #23684d;
 
   /* 간격 */
@@ -48,6 +49,7 @@
     --accent: #6fbf95;
     --danger: #f2705d;
     --success: #4cc38a;
+    --star: #f7b955;
     --focus: #6fbf95;
   }
 }

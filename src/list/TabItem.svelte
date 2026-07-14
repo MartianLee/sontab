@@ -5,16 +5,21 @@
     tab,
     onRestore,
     onDelete,
+    onToggleStar,
     disabled = false,
   }: {
     tab: SavedTab;
     onRestore: () => void;
     onDelete: () => void;
+    onToggleStar: () => void;
     disabled?: boolean;
   } = $props();
 </script>
 
 <li class="tab-item">
+  <button class="star" class:on={tab.starred} title="즐겨찾기" onclick={onToggleStar}>
+    {tab.starred ? '★' : '☆'}
+  </button>
   {#if tab.favIconUrl}
     <img class="favicon" src={tab.favIconUrl} alt="" />
   {:else}
@@ -81,5 +86,19 @@
   .delete:disabled {
     color: var(--border-strong);
     cursor: default;
+  }
+  .star {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: var(--text-xs);
+    color: var(--border-strong);
+    cursor: pointer;
+  }
+  .star:hover {
+    color: var(--text-muted);
+  }
+  .star.on {
+    color: var(--star);
   }
 </style>

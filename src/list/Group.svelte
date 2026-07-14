@@ -10,6 +10,7 @@
     onDeleteGroup,
     onRename,
     onToggleLock,
+    onToggleStar,
   }: {
     group: TabGroup;
     onRestoreTab: (tabId: string) => void;
@@ -18,6 +19,7 @@
     onDeleteGroup: () => void;
     onRename: (name: string) => void;
     onToggleLock: () => void;
+    onToggleStar: (tabId: string) => void;
   } = $props();
 
   let editing = $state(false);
@@ -73,6 +75,7 @@
         {tab}
         onRestore={() => onRestoreTab(tab.id)}
         onDelete={() => onDeleteTab(tab.id)}
+        onToggleStar={() => onToggleStar(tab.id)}
         disabled={group.locked}
       />
     {/each}
