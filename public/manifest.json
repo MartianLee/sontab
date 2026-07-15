@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "SonTab",
   "version": "0.1.0",
-  "description": "탭을 한 곳에 모아 메모리를 아끼는 가벼운 탭 관리자",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
   "permissions": ["tabs", "storage", "unlimitedStorage"],
   "background": { "service_worker": "background.js", "type": "module" },
   "icons": {
@@ -12,7 +13,7 @@
     "128": "icons/icon-128.png"
   },
   "action": {
-    "default_title": "탭 모으기",
+    "default_title": "__MSG_actionTitle__",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png"

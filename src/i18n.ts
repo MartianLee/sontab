@@ -1,0 +1,387 @@
+export const SUPPORTED_LANGS = ['en', 'es', 'fr', 'ko', 'ja'] as const;
+export type Lang = (typeof SUPPORTED_LANGS)[number];
+
+export const LANG_OPTIONS: { value: Lang; label: string }[] = [
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Español' },
+  { value: 'fr', label: 'Français' },
+  { value: 'ko', label: '한국어' },
+  { value: 'ja', label: '日本語' },
+];
+
+export function detectLang(languages: readonly string[]): Lang {
+  for (const tag of languages) {
+    const base = tag.toLowerCase().split('-')[0];
+    if ((SUPPORTED_LANGS as readonly string[]).includes(base)) return base as Lang;
+  }
+  return 'en';
+}
+
+const en = {
+  'view.all': 'All',
+  'view.starred': 'Starred',
+  'view.locked': 'Locked groups',
+  'view.domain': 'By domain',
+  'sidebar.search': 'Search title or URL',
+  'sidebar.settings': 'Settings',
+  'unit.tab.one': '1 tab',
+  'unit.tab.other': '{n} tabs',
+  'unit.group.one': '1 group',
+  'unit.group.other': '{n} groups',
+  'unit.domain.one': '1 domain',
+  'unit.domain.other': '{n} domains',
+  'empty.search': "No tabs match '{query}'.",
+  'empty.starred': 'No starred tabs yet. Click ☆ next to a tab to mark pages to revisit.',
+  'empty.locked': 'No locked groups.',
+  'empty.all': 'No saved tabs. Click the SonTab toolbar icon to collect your tabs.',
+  'group.restoreAll': 'Restore all',
+  'group.lock': 'Lock',
+  'group.unlock': 'Unlock',
+  'group.delete': 'Delete group',
+  'group.rename': 'Rename',
+  'tab.star': 'Star',
+  'tab.delete': 'Delete',
+  'domain.other': 'Other',
+  'settings.title': 'Settings',
+  'settings.general': 'General',
+  'settings.data': 'Import / Export',
+  'settings.about': 'About',
+  'settings.language': 'Language',
+  'settings.languageDesc': 'Detected from your browser language on first launch.',
+  'settings.theme': 'Theme',
+  'settings.themeDesc': "Auto follows your device's light/dark setting.",
+  'theme.auto': 'Auto',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'settings.hideMain': 'Hide service home pages',
+  'settings.hideMainDesc':
+    'Hides root-page tabs like naver.com or google.com from the list. Starred (★) tabs stay visible.',
+  'settings.importHtml': 'Import OneTab HTML file',
+  'settings.importHtmlDesc':
+    'Imports groups from a saved OneTab page, preserving names and creation dates.',
+  'settings.chooseFile': 'Choose file',
+  'settings.importText': 'Import text',
+  'settings.importTextDesc':
+    'Paste lines of URL | title below. Separate groups with a blank line (OneTab compatible).',
+  'settings.import': 'Import',
+  'settings.exportText': 'Export as text',
+  'settings.exportTextDesc': 'Exports all saved groups in the same text format.',
+  'settings.export': 'Export',
+  'settings.placeholder': 'URL | title format, blank line between groups (OneTab compatible)',
+  'settings.domainLimit': 'Tabs shown per domain',
+  'settings.domainLimitDesc':
+    'In the by-domain view, show up to this many newest tabs per domain. Expand to see the rest.',
+  'domain.expand': 'Show all (+{n})',
+  'domain.collapse': 'Show less',
+  'msg.exported': 'Exported below. Copy the text to use it.',
+  'msg.imported': 'Imported {groups}.',
+  'msg.importedHtml': 'Imported {groups} ({tabs}).',
+  'msg.noUrls': 'No URLs to import.',
+  'msg.noOneTab': 'No OneTab groups found.',
+  'about.tagline': 'A tab manager that treasures your tabs like a son.',
+  'about.stats': 'Archive status',
+  'about.statsDesc': 'Tabs and groups collected so far.',
+};
+
+export type MsgKey = keyof typeof en;
+type Dict = Record<MsgKey, string>;
+
+const es: Dict = {
+  'view.all': 'Todo',
+  'view.starred': 'Favoritos',
+  'view.locked': 'Grupos bloqueados',
+  'view.domain': 'Por dominio',
+  'sidebar.search': 'Buscar título o URL',
+  'sidebar.settings': 'Ajustes',
+  'unit.tab.one': '1 pestaña',
+  'unit.tab.other': '{n} pestañas',
+  'unit.group.one': '1 grupo',
+  'unit.group.other': '{n} grupos',
+  'unit.domain.one': '1 dominio',
+  'unit.domain.other': '{n} dominios',
+  'empty.search': "Ninguna pestaña coincide con '{query}'.",
+  'empty.starred':
+    'Aún no hay pestañas favoritas. Pulsa ☆ junto a una pestaña para marcar páginas que quieras releer.',
+  'empty.locked': 'No hay grupos bloqueados.',
+  'empty.all':
+    'No hay pestañas guardadas. Pulsa el icono de SonTab en la barra de herramientas para recogerlas.',
+  'group.restoreAll': 'Restaurar todo',
+  'group.lock': 'Bloquear',
+  'group.unlock': 'Desbloquear',
+  'group.delete': 'Eliminar grupo',
+  'group.rename': 'Renombrar',
+  'tab.star': 'Favorito',
+  'tab.delete': 'Eliminar',
+  'domain.other': 'Otros',
+  'settings.title': 'Ajustes',
+  'settings.general': 'General',
+  'settings.data': 'Importar / Exportar',
+  'settings.about': 'Acerca de',
+  'settings.language': 'Idioma',
+  'settings.languageDesc': 'Se detecta desde el idioma del navegador en el primer inicio.',
+  'settings.theme': 'Tema',
+  'settings.themeDesc': 'Automático sigue el ajuste claro/oscuro del dispositivo.',
+  'theme.auto': 'Automático',
+  'theme.light': 'Claro',
+  'theme.dark': 'Oscuro',
+  'settings.hideMain': 'Ocultar páginas de inicio',
+  'settings.hideMainDesc':
+    'Oculta pestañas de páginas raíz como naver.com o google.com. Las favoritas (★) siguen visibles.',
+  'settings.importHtml': 'Importar archivo HTML de OneTab',
+  'settings.importHtmlDesc':
+    'Importa grupos desde una página de OneTab guardada, conservando nombres y fechas de creación.',
+  'settings.chooseFile': 'Elegir archivo',
+  'settings.importText': 'Importar texto',
+  'settings.importTextDesc':
+    'Pega líneas de URL | título abajo. Separa los grupos con una línea en blanco (compatible con OneTab).',
+  'settings.import': 'Importar',
+  'settings.exportText': 'Exportar como texto',
+  'settings.exportTextDesc': 'Exporta todos los grupos guardados en el mismo formato de texto.',
+  'settings.export': 'Exportar',
+  'settings.placeholder':
+    'Formato URL | título, línea en blanco entre grupos (compatible con OneTab)',
+  'settings.domainLimit': 'Pestañas mostradas por dominio',
+  'settings.domainLimitDesc':
+    'En la vista por dominio, muestra hasta este número de pestañas más recientes por dominio. Expande para ver el resto.',
+  'domain.expand': 'Mostrar todo (+{n})',
+  'domain.collapse': 'Mostrar menos',
+  'msg.exported': 'Exportado abajo. Copia el texto para usarlo.',
+  'msg.imported': 'Importado: {groups}.',
+  'msg.importedHtml': 'Importado: {groups} ({tabs}).',
+  'msg.noUrls': 'No hay URLs para importar.',
+  'msg.noOneTab': 'No se encontraron grupos de OneTab.',
+  'about.tagline': 'Un gestor de pestañas que cuida tus pestañas como a un hijo.',
+  'about.stats': 'Estado del archivo',
+  'about.statsDesc': 'Pestañas y grupos recogidos hasta ahora.',
+};
+
+const fr: Dict = {
+  'view.all': 'Tout',
+  'view.starred': 'Favoris',
+  'view.locked': 'Groupes verrouillés',
+  'view.domain': 'Par domaine',
+  'sidebar.search': 'Rechercher un titre ou une URL',
+  'sidebar.settings': 'Paramètres',
+  'unit.tab.one': '1 onglet',
+  'unit.tab.other': '{n} onglets',
+  'unit.group.one': '1 groupe',
+  'unit.group.other': '{n} groupes',
+  'unit.domain.one': '1 domaine',
+  'unit.domain.other': '{n} domaines',
+  'empty.search': "Aucun onglet ne correspond à '{query}'.",
+  'empty.starred':
+    'Aucun onglet favori. Cliquez sur ☆ à côté d’un onglet pour marquer les pages à relire.',
+  'empty.locked': 'Aucun groupe verrouillé.',
+  'empty.all':
+    'Aucun onglet enregistré. Cliquez sur l’icône SonTab dans la barre d’outils pour collecter vos onglets.',
+  'group.restoreAll': 'Tout restaurer',
+  'group.lock': 'Verrouiller',
+  'group.unlock': 'Déverrouiller',
+  'group.delete': 'Supprimer le groupe',
+  'group.rename': 'Renommer',
+  'tab.star': 'Favori',
+  'tab.delete': 'Supprimer',
+  'domain.other': 'Autres',
+  'settings.title': 'Paramètres',
+  'settings.general': 'Général',
+  'settings.data': 'Importer / Exporter',
+  'settings.about': 'À propos',
+  'settings.language': 'Langue',
+  'settings.languageDesc': 'Détectée depuis la langue du navigateur au premier lancement.',
+  'settings.theme': 'Thème',
+  'settings.themeDesc': 'Auto suit le réglage clair/sombre de l’appareil.',
+  'theme.auto': 'Auto',
+  'theme.light': 'Clair',
+  'theme.dark': 'Sombre',
+  'settings.hideMain': 'Masquer les pages d’accueil',
+  'settings.hideMainDesc':
+    'Masque les onglets de pages racines comme naver.com ou google.com. Les favoris (★) restent visibles.',
+  'settings.importHtml': 'Importer un fichier HTML OneTab',
+  'settings.importHtmlDesc':
+    'Importe les groupes depuis une page OneTab enregistrée, en conservant noms et dates de création.',
+  'settings.chooseFile': 'Choisir un fichier',
+  'settings.importText': 'Importer du texte',
+  'settings.importTextDesc':
+    'Collez des lignes URL | titre ci-dessous. Séparez les groupes par une ligne vide (compatible OneTab).',
+  'settings.import': 'Importer',
+  'settings.exportText': 'Exporter en texte',
+  'settings.exportTextDesc': 'Exporte tous les groupes enregistrés au même format texte.',
+  'settings.export': 'Exporter',
+  'settings.placeholder':
+    'Format URL | titre, ligne vide entre les groupes (compatible OneTab)',
+  'settings.domainLimit': 'Onglets affichés par domaine',
+  'settings.domainLimitDesc':
+    'Dans la vue par domaine, affiche jusqu’à ce nombre d’onglets les plus récents par domaine. Développez pour voir le reste.',
+  'domain.expand': 'Tout afficher (+{n})',
+  'domain.collapse': 'Réduire',
+  'msg.exported': 'Exporté ci-dessous. Copiez le texte pour l’utiliser.',
+  'msg.imported': 'Importé : {groups}.',
+  'msg.importedHtml': 'Importé : {groups} ({tabs}).',
+  'msg.noUrls': 'Aucune URL à importer.',
+  'msg.noOneTab': 'Aucun groupe OneTab trouvé.',
+  'about.tagline': 'Un gestionnaire d’onglets qui chérit vos onglets comme un fils.',
+  'about.stats': 'État de l’archive',
+  'about.statsDesc': 'Onglets et groupes collectés jusqu’ici.',
+};
+
+const ko: Dict = {
+  'view.all': '전체',
+  'view.starred': '즐겨찾기',
+  'view.locked': '잠긴 그룹',
+  'view.domain': '도메인별',
+  'sidebar.search': '제목·주소 검색',
+  'sidebar.settings': '설정',
+  'unit.tab.one': '탭 1개',
+  'unit.tab.other': '탭 {n}개',
+  'unit.group.one': '그룹 1개',
+  'unit.group.other': '그룹 {n}개',
+  'unit.domain.one': '도메인 1개',
+  'unit.domain.other': '도메인 {n}개',
+  'empty.search': "'{query}'에 맞는 탭이 없습니다.",
+  'empty.starred':
+    '즐겨찾기한 탭이 없습니다. 탭 왼쪽의 ☆를 눌러 다시 읽을 페이지를 표시해 보세요.',
+  'empty.locked': '잠긴 그룹이 없습니다.',
+  'empty.all': '저장된 탭이 없습니다. 툴바의 SonTab 아이콘을 눌러 탭을 모아보세요.',
+  'group.restoreAll': '전체 복원',
+  'group.lock': '잠금',
+  'group.unlock': '잠금 해제',
+  'group.delete': '그룹 삭제',
+  'group.rename': '이름 바꾸기',
+  'tab.star': '즐겨찾기',
+  'tab.delete': '삭제',
+  'domain.other': '기타',
+  'settings.title': '설정',
+  'settings.general': '일반',
+  'settings.data': '가져오기 / 내보내기',
+  'settings.about': '정보',
+  'settings.language': '언어',
+  'settings.languageDesc': '처음 실행할 때 브라우저 언어를 자동으로 감지합니다.',
+  'settings.theme': '테마',
+  'settings.themeDesc': '자동은 기기의 라이트/다크 설정을 따릅니다.',
+  'theme.auto': '자동',
+  'theme.light': '라이트',
+  'theme.dark': '다크',
+  'settings.hideMain': '서비스 메인 페이지 자동 숨기기',
+  'settings.hideMainDesc':
+    'naver.com, google.com처럼 경로 없는 첫 화면 탭을 목록에서 숨깁니다. 즐겨찾기(★)한 탭은 예외입니다.',
+  'settings.importHtml': 'OneTab HTML 파일 가져오기',
+  'settings.importHtmlDesc':
+    'OneTab 페이지를 저장한 HTML 파일에서 그룹 이름과 생성일을 보존해 가져옵니다.',
+  'settings.chooseFile': '파일 선택',
+  'settings.importText': '텍스트 가져오기',
+  'settings.importTextDesc':
+    '아래 상자에 URL | 제목 형식으로 붙여넣으세요. 그룹 사이는 빈 줄로 구분합니다 (OneTab 호환).',
+  'settings.import': '가져오기',
+  'settings.exportText': '텍스트로 내보내기',
+  'settings.exportTextDesc': '저장된 모든 그룹을 같은 형식의 텍스트로 내보냅니다.',
+  'settings.export': '내보내기',
+  'settings.placeholder': 'URL | 제목 형식, 그룹 사이는 빈 줄 (OneTab 호환)',
+  'settings.domainLimit': '도메인당 표시 탭 수',
+  'settings.domainLimitDesc':
+    '도메인별 보기에서 도메인마다 최신순으로 이 개수까지만 표시합니다. 나머지는 펼쳐서 볼 수 있습니다.',
+  'domain.expand': '모두 보기 (+{n})',
+  'domain.collapse': '접기',
+  'msg.exported': '아래 상자에 내보냈습니다. 복사해 사용하세요.',
+  'msg.imported': '{groups}를 가져왔습니다.',
+  'msg.importedHtml': '{groups}({tabs})를 가져왔습니다.',
+  'msg.noUrls': '가져올 URL이 없습니다.',
+  'msg.noOneTab': 'OneTab 그룹을 찾지 못했습니다.',
+  'about.tagline': '탭을 아들처럼 소중히 보관하는 탭 관리자',
+  'about.stats': '보관 현황',
+  'about.statsDesc': '지금까지 모아 둔 탭과 그룹 수입니다.',
+};
+
+const ja: Dict = {
+  'view.all': 'すべて',
+  'view.starred': 'お気に入り',
+  'view.locked': 'ロック中のグループ',
+  'view.domain': 'ドメイン別',
+  'sidebar.search': 'タイトル・URLを検索',
+  'sidebar.settings': '設定',
+  'unit.tab.one': 'タブ 1個',
+  'unit.tab.other': 'タブ {n}個',
+  'unit.group.one': 'グループ 1個',
+  'unit.group.other': 'グループ {n}個',
+  'unit.domain.one': 'ドメイン 1個',
+  'unit.domain.other': 'ドメイン {n}個',
+  'empty.search': '「{query}」に一致するタブはありません。',
+  'empty.starred':
+    'お気に入りのタブはまだありません。タブ横の☆を押して、読み返したいページに印を付けましょう。',
+  'empty.locked': 'ロック中のグループはありません。',
+  'empty.all':
+    '保存されたタブはありません。ツールバーのSonTabアイコンを押してタブを集めましょう。',
+  'group.restoreAll': 'すべて復元',
+  'group.lock': 'ロック',
+  'group.unlock': 'ロック解除',
+  'group.delete': 'グループを削除',
+  'group.rename': '名前を変更',
+  'tab.star': 'お気に入り',
+  'tab.delete': '削除',
+  'domain.other': 'その他',
+  'settings.title': '設定',
+  'settings.general': '一般',
+  'settings.data': 'インポート / エクスポート',
+  'settings.about': '情報',
+  'settings.language': '言語',
+  'settings.languageDesc': '初回起動時にブラウザの言語を自動検出します。',
+  'settings.theme': 'テーマ',
+  'settings.themeDesc': '自動はデバイスのライト/ダーク設定に従います。',
+  'theme.auto': '自動',
+  'theme.light': 'ライト',
+  'theme.dark': 'ダーク',
+  'settings.hideMain': 'サービスのトップページを自動的に隠す',
+  'settings.hideMainDesc':
+    'naver.com や google.com のようなルートページのタブを一覧から隠します。お気に入り(★)は例外です。',
+  'settings.importHtml': 'OneTab HTMLファイルをインポート',
+  'settings.importHtmlDesc':
+    '保存したOneTabページからグループ名と作成日を保持して取り込みます。',
+  'settings.chooseFile': 'ファイルを選択',
+  'settings.importText': 'テキストをインポート',
+  'settings.importTextDesc':
+    '下の欄に URL | タイトル 形式で貼り付けてください。グループは空行で区切ります(OneTab互換)。',
+  'settings.import': 'インポート',
+  'settings.exportText': 'テキストでエクスポート',
+  'settings.exportTextDesc': '保存されたすべてのグループを同じ形式のテキストで出力します。',
+  'settings.export': 'エクスポート',
+  'settings.placeholder': 'URL | タイトル形式、グループ間は空行(OneTab互換)',
+  'settings.domainLimit': 'ドメインごとの表示タブ数',
+  'settings.domainLimitDesc':
+    'ドメイン別表示で、ドメインごとに新しい順でこの数まで表示します。残りは展開して見られます。',
+  'domain.expand': 'すべて表示 (+{n})',
+  'domain.collapse': '折りたたむ',
+  'msg.exported': '下の欄に出力しました。コピーしてご利用ください。',
+  'msg.imported': '{groups}をインポートしました。',
+  'msg.importedHtml': '{groups}({tabs})をインポートしました。',
+  'msg.noUrls': 'インポートするURLがありません。',
+  'msg.noOneTab': 'OneTabのグループが見つかりませんでした。',
+  'about.tagline': 'タブを息子のように大切に保管するタブマネージャー',
+  'about.stats': '保管状況',
+  'about.statsDesc': 'これまでに集めたタブとグループの数です。',
+};
+
+const DICTS: Record<Lang, Dict> = { en, es, fr, ko, ja };
+
+function interpolate(template: string, params?: Record<string, string | number>): string {
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (m, name: string) =>
+    name in params ? String(params[name]) : m,
+  );
+}
+
+export function translate(
+  lang: Lang,
+  key: MsgKey,
+  params?: Record<string, string | number>,
+): string {
+  const template = DICTS[lang][key] ?? en[key] ?? key;
+  return interpolate(template, params);
+}
+
+/** 개수 문자열: 1이면 `<key>.one`, 아니면 `<key>.other`에 {n} 치환 */
+export function tCount(
+  lang: Lang,
+  key: 'unit.tab' | 'unit.group' | 'unit.domain',
+  n: number,
+): string {
+  return translate(lang, (n === 1 ? `${key}.one` : `${key}.other`) as MsgKey, { n });
+}
