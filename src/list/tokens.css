@@ -1,5 +1,6 @@
+/* 실제 적용 테마는 JS가 <html data-theme="light|dark">로 결정한다 (설정: 자동/라이트/다크) */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   /* 색 — B안 페이퍼 아카이브 (라이트) */
   --bg: #faf8f5;
@@ -36,22 +37,22 @@
   --text-lg: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #161815;
-    --surface: #1e211c;
-    --surface-hover: #262a24;
-    --border: #34382f;
-    --border-strong: #454a3f;
-    --text: #e9e7e1;
-    --text-muted: #a09a8e;
-    --text-faint: #7d756a;
-    --accent: #6fbf95;
-    --danger: #f2705d;
-    --success: #4cc38a;
-    --star: #f7b955;
-    --focus: #6fbf95;
-  }
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #161815;
+  --surface: #1e211c;
+  --surface-hover: #262a24;
+  --border: #34382f;
+  --border-strong: #454a3f;
+  --text: #e9e7e1;
+  --text-muted: #a09a8e;
+  --text-faint: #7d756a;
+  --accent: #6fbf95;
+  --danger: #f2705d;
+  --success: #4cc38a;
+  --star: #f7b955;
+  --focus: #6fbf95;
 }
 
 :focus-visible {
