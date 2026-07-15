@@ -100,6 +100,12 @@ describe('parseKoreanDate', () => {
   it('다른 로캘은 null을 반환한다', () => {
     expect(parseKoreanDate('Created 7/3/2026, 8:12:12 PM')).toBeNull();
   });
+
+  it('두 자리 연도와 초 없는 시각도 파싱한다', () => {
+    expect(parseKoreanDate('26. 7. 3. 오후 8:12')).toBe(
+      new Date(2026, 6, 3, 20, 12, 0).getTime(),
+    );
+  });
 });
 
 describe('parseOneTabHtml', () => {
@@ -120,5 +126,68 @@ describe('parseOneTabHtml', () => {
 
   it('tabGroup 블록이 없으면 빈 배열을 반환한다', () => {
     expect(parseOneTabHtml('<html><body>hello</body></html>')).toEqual([]);
+  });
+});
+
+// OneTab 페이지를 브라우저 "페이지 저장"으로 받은 DOM 형식 (내보내기 버튼과 마크업이 다름)
+const SAVED_PAGE_FIXTURE = `<!DOCTYPE html><html><body>
+<div class="treeItem"><span class="editInPlaceLabelSpan">모두</span></div>
+<div class="tabGroup" style="display: block; margin-inline: 0px;">
+  <div class="tabGroupBody centerColFolderHeaderGroup" style="border-radius: 10px;">
+    <div class="tabGroupLabelText" style="position: relative;"><span class="editInPlaceLabelSpan">탭 2개</span></div>
+    <div style="text-align: end;"><span style="unicode-bidi: plaintext;">26. 7. 3.</span> <span style="unicode-bidi: plaintext;">오후 8:12</span> - <span style="unicode-bidi: plaintext;">2주 전</span></div>
+    <div class="tab"><div class="tabInner">
+      <a draggable="false" tabindex="-1" class="tabLink tabLinkText" href="https://a.com/?x=1&amp;y=2" style="cursor: default;"><span class="tabLinkText tabLinkTextStripesPossible" style="cursor: pointer;">A &amp; B</span></a>
+    </div></div>
+    <div class="tab"><div class="tabInner">
+      <a draggable="false" class="tabLink tabLinkText" href="https://b.com/"><span class="tabLinkText tabLinkTextStripesPossible">B</span></a>
+    </div></div>
+  </div>
+</div>
+<div class="tabGroup" style="display: block;">
+  <div class="tabGroupBody">
+    <div class="tabGroupLabelText"><span class="editInPlaceLabelSpan">아침 리서치</span></div>
+    <div class="tab"><a draggable="false" class="tabLink tabLinkText" href="https://c.com/"><span class="tabLinkText tabLinkTextStripesPossible">C</span></a></div>
+  </div>
+</div>
+</body></html>`;
+
+describe('parseOneTabHtml (저장된 페이지 형식)', () => {
+  it('tabLink tabLinkText 앵커와 중첩 span 제목을 파싱한다', () => {
+    const groups = parseOneTabHtml(SAVED_PAGE_FIXTURE);
+    expect(groups).toHaveLength(2);
+    expect(groups[0].tabs.map((t) => t.url)).toEqual(['https://a.com/?x=1&y=2', 'https://b.com/']);
+    expect(groups[0].tabs[0].title).toBe('A & B');
+  });
+
+  it('"탭 N개" 자동 라벨은 무명 그룹, 실제 이름은 보존한다', () => {
+    const groups = parseOneTabHtml(SAVED_PAGE_FIXTURE);
+    expect(groups[0].name).toBe('');
+    expect(groups[1].name).toBe('아침 리서치');
+  });
+
+  it('헤더의 두 자리 연도 날짜(26. 7. 3. 오후 8:12)를 생성일로 파싱한다', () => {
+    const groups = parseOneTabHtml(SAVED_PAGE_FIXTURE);
+    expect(groups[0].createdAt).toBe(new Date(2026, 6, 3, 20, 12, 0).getTime());
+  });
+
+  it('헤더에 날짜가 없으면 생성일은 null이고, 탭 제목 속 날짜는 무시한다', () => {
+    const html = `<div class="tabGroup"><div class="tab">
+      <a class="tabLink tabLinkText" href="https://a.com/"><span class="tabLinkText">26. 7. 3. 오후 8:12 회의록</span></a>
+    </div></div>`;
+    expect(parseOneTabHtml(html)[0].createdAt).toBeNull();
+  });
+
+  it('첫 tabGroup 이전의 사이드바 라벨("모두")은 그룹에 영향을 주지 않는다', () => {
+    const groups = parseOneTabHtml(SAVED_PAGE_FIXTURE);
+    expect(groups.every((g) => g.name !== '모두')).toBe(true);
+  });
+
+  it('OneTab placeholder URL은 원본 file:// URL로 복원한다', () => {
+    const html = `<div class="tabGroup"><div class="tab">
+      <a class="tabLink tabLinkText" href="chrome-extension://chphlpgkkbolifaimnlloiipkdnihall/placeholder.html?url=file%3A%2F%2F%2FUsers%2Fme%2Fdoc%2520a.pdf"><span class="tabLinkText">문서</span></a>
+    </div></div>`;
+    const groups = parseOneTabHtml(html);
+    expect(groups[0].tabs[0].url).toBe('file:///Users/me/doc%20a.pdf');
   });
 });
