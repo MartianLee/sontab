@@ -8,7 +8,8 @@
     "build": "vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "icons": "node scripts/build-icons.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "package": "rm -rf dist sontab-v$npm_package_version.zip && npm run build && cd dist && zip -rX ../sontab-v$npm_package_version.zip . -x 'node_modules/*' '.*' && cd .. && echo 'Created sontab-v'$npm_package_version'.zip'"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
