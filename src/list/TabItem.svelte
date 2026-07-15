@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SavedTab } from '../types';
+  import { t } from './locale.svelte';
 
   let {
     tab,
@@ -7,12 +8,15 @@
     onDelete,
     onToggleStar,
     disabled = false,
+    source = '',
   }: {
     tab: SavedTab;
     onRestore: () => void;
     onDelete: () => void;
     onToggleStar: () => void;
     disabled?: boolean;
+    /** 출처 표시 (도메인별 보기에서 수집된 그룹 이름/날짜) */
+    source?: string;
   } = $props();
 </script>
 
@@ -20,7 +24,7 @@
   <button
     class="star"
     class:on={tab.starred}
-    title="즐겨찾기"
+    title={t('tab.star')}
     aria-pressed={tab.starred === true}
     onclick={onToggleStar}
   >
@@ -34,7 +38,10 @@
   <button class="title" title={tab.url} onclick={onRestore}>
     {tab.title || tab.url}
   </button>
-  <button class="delete" title="삭제" onclick={onDelete} disabled={disabled}>×</button>
+  {#if source}
+    <span class="source">{source}</span>
+  {/if}
+  <button class="delete" title={t('tab.delete')} onclick={onDelete} disabled={disabled}>×</button>
 </li>
 
 <style>
@@ -73,6 +80,15 @@
   }
   .title:hover {
     text-decoration: underline;
+  }
+  .source {
+    flex-shrink: 0;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--text-xs);
+    color: var(--text-faint);
   }
   .delete {
     background: none;

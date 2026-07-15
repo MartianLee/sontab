@@ -5,8 +5,17 @@
     addGroup,
     countTabs,
     createGroup,
+    loadDomainLimit,
     loadGroups,
+    loadHideMainPages,
+    loadLang,
+    loadTheme,
+    persistDomainLimit,
     persistGroups,
+    persistHideMainPages,
+    persistLang,
+    persistTheme,
+    type DomainLimit,
     removeGroup,
     removeTab,
     removeTabs,
@@ -20,30 +29,94 @@
     countLockedGroups,
     countStarred,
     filterGroups,
-    type ListView,
+    type SidebarView,
   } from '../filter';
+  import { groupByDomain, hideMainPages, type DomainEntry } from '../domain';
   import { exportText, parseImport, parseOneTabHtml } from '../importExport';
+  import { detectLang, type Lang } from '../i18n';
+  import { resolveTheme, type ThemeSetting } from '../theme';
+  import { locale, t, tc } from './locale.svelte';
+  import DomainGroup from './DomainGroup.svelte';
   import Group from './Group.svelte';
-  import ImportExport from './ImportExport.svelte';
+  import Settings from './Settings.svelte';
   import Sidebar from './Sidebar.svelte';
 
   let groups = $state<TabGroup[]>([]);
   let query = $state('');
-  let view = $state<ListView>('all');
+  let view = $state<SidebarView>('all');
+  let page = $state<'list' | 'settings'>('list');
+  let theme = $state<ThemeSetting>('auto');
+  let systemDark = $state(matchMedia('(prefers-color-scheme: dark)').matches);
+  let hideMain = $state(true);
+  let domainLimit = $state<DomainLimit>(5);
 
-  const visible = $derived(filterGroups(byView(groups, view), query));
+  $effect(() => {
+    document.documentElement.dataset.theme = resolveTheme(theme, systemDark);
+  });
+
+  function setTheme(t: ThemeSetting) {
+    theme = t;
+    void persistTheme(t);
+  }
+
+  function setHideMain(value: boolean) {
+    hideMain = value;
+    void persistHideMainPages(value);
+  }
+
+  function setLang(lang: Lang) {
+    locale.lang = lang;
+    void persistLang(lang);
+  }
+
+  function setDomainLimit(value: DomainLimit) {
+    domainLimit = value;
+    void persistDomainLimit(value);
+  }
+
+  const effective = $derived(hideMain ? hideMainPages(groups) : groups);
+  const visible = $derived(
+    view === 'domain'
+      ? []
+      : filterGroups(byView(effective, view), query),
+  );
+  const domainGroups = $derived(
+    view === 'domain' ? groupByDomain(filterGroups(effective, query)) : [],
+  );
   const counts = $derived({
-    tabs: countTabs(groups),
-    groups: groups.length,
-    starred: countStarred(groups),
-    locked: countLockedGroups(groups),
+    tabs: countTabs(effective),
+    groups: effective.length,
+    starred: countStarred(effective),
+    locked: countLockedGroups(effective),
+    domains: groupByDomain(effective).length,
   });
   const viewTitle = $derived(
-    view === 'all' ? '전체' : view === 'starred' ? '즐겨찾기' : '잠긴 그룹',
+    view === 'all'
+      ? t('view.all')
+      : view === 'starred'
+        ? t('view.starred')
+        : view === 'locked'
+          ? t('view.locked')
+          : t('view.domain'),
   );
 
   onMount(() => {
     void loadGroups().then((g) => (groups = sortByCreatedAt(g)));
+    void loadTheme().then((v) => (theme = v));
+    void loadHideMainPages().then((v) => (hideMain = v));
+    void loadDomainLimit().then((v) => (domainLimit = v));
+    void loadLang().then((stored) => {
+      if (stored) {
+        locale.lang = stored;
+      } else {
+        // 첫 실행: 브라우저 언어가 지원 언어면 자동 설정 (기본 영어)
+        locale.lang = detectLang(navigator.languages);
+        void persistLang(locale.lang);
+      }
+    });
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    const onMedia = (e: MediaQueryListEvent) => (systemDark = e.matches);
+    media.addEventListener('change', onMedia);
     const listener = (
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,
@@ -55,7 +128,10 @@
       }
     };
     chrome.storage.onChanged.addListener(listener);
-    return () => chrome.storage.onChanged.removeListener(listener);
+    return () => {
+      chrome.storage.onChanged.removeListener(listener);
+      media.removeEventListener('change', onMedia);
+    };
   });
 
   async function update(mutate: (current: TabGroup[]) => TabGroup[]) {
@@ -130,32 +206,78 @@
 </script>
 
 <div class="layout">
-  <Sidebar bind:query {view} {counts} onSelectView={(v) => (view = v)} />
+  <Sidebar
+    bind:query
+    {view}
+    {counts}
+    settingsOpen={page === 'settings'}
+    onSelectView={(v) => {
+      view = v;
+      page = 'list';
+    }}
+    onOpenSettings={() => (page = 'settings')}
+  />
 
   <main>
+    {#if page === 'settings'}
+      <header class="content-head">
+        <h1>{t('settings.title')}</h1>
+      </header>
+      <Settings
+        counts={{ tabs: counts.tabs, groups: counts.groups }}
+        {theme}
+        {hideMain}
+        {domainLimit}
+        onSetTheme={setTheme}
+        onSetHideMain={setHideMain}
+        onSetLang={setLang}
+        onSetDomainLimit={setDomainLimit}
+        onExport={() => exportText(groups)}
+        onImport={handleImport}
+        onImportHtml={handleImportHtml}
+      />
+    {:else}
     <header class="content-head">
       <h1>{viewTitle}</h1>
       <span class="meta">
-        탭 {countTabs(visible)}개 · 그룹 {visible.length}개
+        {#if view === 'domain'}
+          {tc('unit.tab', domainGroups.reduce((n, d) => n + d.entries.length, 0))} · {tc('unit.domain', domainGroups.length)}
+        {:else}
+          {tc('unit.tab', countTabs(visible))} · {tc('unit.group', visible.length)}
+        {/if}
       </span>
     </header>
 
-    <ImportExport
-      onExport={() => exportText(groups)}
-      onImport={handleImport}
-      onImportHtml={handleImportHtml}
-    />
-
-    {#if visible.length === 0}
+    {#if view === 'domain'}
+      {#if domainGroups.length === 0}
+        <p class="empty">
+          {#if query.trim()}
+            {t('empty.search', { query: query.trim() })}
+          {:else}
+            {t('empty.all')}
+          {/if}
+        </p>
+      {:else}
+        {#each domainGroups as domainGroup (domainGroup.domain)}
+          <DomainGroup
+            {domainGroup}
+            limit={domainLimit}
+            onRestoreTab={(e: DomainEntry) => restoreTab(e.group, e.tab.id)}
+            onDeleteTab={(e: DomainEntry) => update((g) => removeTab(g, e.group.id, e.tab.id))}
+            onToggleStar={(e: DomainEntry) => update((g) => toggleStar(g, e.group.id, e.tab.id))}
+          />
+        {/each}
+      {/if}
+    {:else if visible.length === 0}
       <p class="empty">
         {#if query.trim()}
-          '{query.trim()}'에 맞는 탭이 없습니다.
+          {t('empty.search', { query: query.trim() })}
         {:else if view === 'starred'}
-          즐겨찾기한 탭이 없습니다. 탭 왼쪽의 ☆를 눌러 다시 읽을 페이지를 표시해 보세요.
+          {t('empty.starred')}
         {:else if view === 'locked'}
-          잠긴 그룹이 없습니다.
+          {t('empty.locked')}
         {:else}
-          저장된 탭이 없습니다. 툴바의 SonTab 아이콘을 눌러 탭을 모아보세요.
+          {t('empty.all')}
         {/if}
       </p>
     {:else}
@@ -171,6 +293,7 @@
           onToggleStar={(tabId) => update((g) => toggleStar(g, group.id, tabId))}
         />
       {/each}
+    {/if}
     {/if}
   </main>
 </div>

@@ -1,16 +1,27 @@
 <script lang="ts">
-  import type { ListView } from '../filter';
+  import type { SidebarView } from '../filter';
+  import { t, tc } from './locale.svelte';
 
   let {
     query = $bindable(''),
     view,
     counts,
+    settingsOpen,
     onSelectView,
+    onOpenSettings,
   }: {
     query: string;
-    view: ListView;
-    counts: { tabs: number; groups: number; starred: number; locked: number };
-    onSelectView: (view: ListView) => void;
+    view: SidebarView;
+    counts: {
+      tabs: number;
+      groups: number;
+      starred: number;
+      locked: number;
+      domains: number;
+    };
+    settingsOpen: boolean;
+    onSelectView: (view: SidebarView) => void;
+    onOpenSettings: () => void;
   } = $props();
 </script>
 
@@ -32,23 +43,40 @@
   <input
     class="search"
     type="search"
-    placeholder="제목·주소 검색"
+    placeholder={t('sidebar.search')}
     bind:value={query}
   />
 
   <nav class="views">
-    <button class:active={view === 'all'} onclick={() => onSelectView('all')}>
-      전체 <span class="count">{counts.tabs}</span>
+    <button class:active={!settingsOpen && view === 'all'} onclick={() => onSelectView('all')}>
+      {t('view.all')} <span class="count">{counts.tabs}</span>
     </button>
-    <button class:active={view === 'starred'} onclick={() => onSelectView('starred')}>
-      ★ 즐겨찾기 <span class="count">{counts.starred}</span>
+    <button
+      class:active={!settingsOpen && view === 'starred'}
+      onclick={() => onSelectView('starred')}
+    >
+      ★ {t('view.starred')} <span class="count">{counts.starred}</span>
     </button>
-    <button class:active={view === 'locked'} onclick={() => onSelectView('locked')}>
-      🔒 잠긴 그룹 <span class="count">{counts.locked}</span>
+    <button
+      class:active={!settingsOpen && view === 'locked'}
+      onclick={() => onSelectView('locked')}
+    >
+      🔒 {t('view.locked')} <span class="count">{counts.locked}</span>
+    </button>
+    <button
+      class:active={!settingsOpen && view === 'domain'}
+      onclick={() => onSelectView('domain')}
+    >
+      🌐 {t('view.domain')} <span class="count">{counts.domains}</span>
     </button>
   </nav>
 
-  <p class="summary">탭 {counts.tabs}개 · 그룹 {counts.groups}개</p>
+  <div class="footer">
+    <button class="settings-btn" class:active={settingsOpen} onclick={onOpenSettings}>
+      ⚙ {t('sidebar.settings')}
+    </button>
+    <p class="summary">{tc('unit.tab', counts.tabs)} · {tc('unit.group', counts.groups)}</p>
+  </div>
 </aside>
 
 <style>
@@ -117,13 +145,39 @@
     font-size: var(--text-xs);
     color: var(--text-muted);
   }
-  .summary {
+  .footer {
     margin-top: auto;
-    margin-bottom: 0;
-    font-size: var(--text-xs);
-    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
     border-top: 1px solid var(--border);
     padding-top: var(--space-3);
+  }
+  .settings-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font: inherit;
+    font-size: var(--text-sm);
+    text-align: left;
+    padding: var(--space-1) var(--space-2);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .settings-btn:hover,
+  .settings-btn.active {
+    background: var(--surface-hover);
+  }
+  .settings-btn.active {
+    font-weight: 700;
+  }
+  .summary {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
   }
   @media (max-width: 720px) {
     aside {
@@ -139,10 +193,12 @@
     .views {
       flex-direction: row;
     }
-    .summary {
+    .footer {
       margin-top: 0;
       border-top: none;
       padding-top: 0;
+      flex-direction: row;
+      align-items: center;
     }
   }
 </style>

@@ -1,6 +1,8 @@
 import type { TabGroup } from './types';
 
 export type ListView = 'all' | 'starred' | 'locked';
+// 사이드바에는 필터 보기 외에 도메인별 묶어 보기가 추가된다
+export type SidebarView = ListView | 'domain';
 
 export function filterGroups(groups: TabGroup[], query: string): TabGroup[] {
   const q = query.trim().toLowerCase();

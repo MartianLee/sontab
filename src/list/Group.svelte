@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { TabGroup } from '../types';
+  import { locale, t, tc } from './locale.svelte';
   import TabItem from './TabItem.svelte';
 
   let {
@@ -36,7 +37,7 @@
   }
 
   const dateLabel = $derived(
-    new Date(group.createdAt).toLocaleString('ko-KR', {
+    new Date(group.createdAt).toLocaleString(locale.lang, {
       dateStyle: 'medium',
       timeStyle: 'short',
     }),
@@ -58,15 +59,17 @@
         }}
       />
     {:else}
-      <button class="name" onclick={startEdit} title="이름 바꾸기">
-        {group.name || `탭 ${group.tabs.length}개`}
+      <button class="name" onclick={startEdit} title={t('group.rename')}>
+        {group.name || tc('unit.tab', group.tabs.length)}
       </button>
     {/if}
-    <span class="meta">{group.tabs.length}개 · {dateLabel}</span>
+    <span class="meta">{tc('unit.tab', group.tabs.length)} · {dateLabel}</span>
     <span class="actions">
-      <button onclick={onRestoreGroup}>전체 복원</button>
-      <button onclick={onToggleLock}>{group.locked ? '🔒 잠금 해제' : '잠금'}</button>
-      <button onclick={onDeleteGroup} disabled={group.locked}>그룹 삭제</button>
+      <button onclick={onRestoreGroup}>{t('group.restoreAll')}</button>
+      <button onclick={onToggleLock}>
+        {group.locked ? `🔒 ${t('group.unlock')}` : t('group.lock')}
+      </button>
+      <button onclick={onDeleteGroup} disabled={group.locked}>{t('group.delete')}</button>
     </span>
   </header>
   <ul>
