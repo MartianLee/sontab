@@ -4,6 +4,7 @@ import {
   addGroup,
   countTabs,
   createGroup,
+  sortByCreatedAt,
   removeGroup,
   removeTab,
   removeTabs,
@@ -53,6 +54,23 @@ describe('addGroup', () => {
     expect(next[0].id).toBe(g.id);
     expect(next).toHaveLength(3);
     expect(groups).toHaveLength(2); // 원본 불변
+  });
+});
+
+describe('sortByCreatedAt', () => {
+  it('생성일 내림차순(최신이 앞)으로 정렬한다', () => {
+    const groups = fixture(); // g1(1000), g2(2000)
+    const next = sortByCreatedAt(groups);
+    expect(next.map((g) => g.id)).toEqual(['g2', 'g1']);
+    expect(groups.map((g) => g.id)).toEqual(['g1', 'g2']); // 원본 불변
+  });
+
+  it('생성일이 같으면 기존 순서를 유지한다 (stable)', () => {
+    const groups = [
+      { ...fixture()[0], id: 'a', createdAt: 500 },
+      { ...fixture()[0], id: 'b', createdAt: 500 },
+    ];
+    expect(sortByCreatedAt(groups).map((g) => g.id)).toEqual(['a', 'b']);
   });
 });
 

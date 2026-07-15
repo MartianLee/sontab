@@ -10,6 +10,10 @@ export function addGroup(groups: TabGroup[], group: TabGroup): TabGroup[] {
   return [group, ...groups];
 }
 
+export function sortByCreatedAt(groups: TabGroup[]): TabGroup[] {
+  return [...groups].sort((a, b) => b.createdAt - a.createdAt);
+}
+
 export function removeTab(groups: TabGroup[], groupId: string, tabId: string): TabGroup[] {
   return groups
     .map((g) =>

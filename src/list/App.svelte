@@ -11,6 +11,7 @@
     removeTab,
     removeTabs,
     renameGroup,
+    sortByCreatedAt,
     toggleLock,
     toggleStar,
   } from '../storage';
@@ -42,13 +43,15 @@
   );
 
   onMount(() => {
-    void loadGroups().then((g) => (groups = g));
+    void loadGroups().then((g) => (groups = sortByCreatedAt(g)));
     const listener = (
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,
     ) => {
       if (area === 'local' && changes.groups) {
-        groups = (changes.groups.newValue as TabGroup[] | undefined) ?? [];
+        groups = sortByCreatedAt(
+          (changes.groups.newValue as TabGroup[] | undefined) ?? [],
+        );
       }
     };
     chrome.storage.onChanged.addListener(listener);
@@ -56,7 +59,7 @@
   });
 
   async function update(mutate: (current: TabGroup[]) => TabGroup[]) {
-    const next = mutate(await loadGroups());
+    const next = sortByCreatedAt(mutate(await loadGroups()));
     groups = next;
     await persistGroups(next);
   }
