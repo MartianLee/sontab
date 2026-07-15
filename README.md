@@ -1,27 +1,49 @@
 # SonTab
 
-OneTab 스타일의 가벼운 탭 관리 크롬 익스텐션.
-툴바 아이콘을 누르면 현재 창의 탭을 모두 저장하고 닫아 메모리를 아낍니다.
+**English** | [한국어](README.ko.md)
 
-## 개발
+A lightweight, OneTab-style tab manager for Chrome.
+Click the toolbar icon to save every tab in the current window into a group and close them — freeing memory while keeping everything one click away.
+
+![SonTab list page](docs/screenshots/list.png)
+
+## Features
+
+- **One-click collect** — saves all unpinned tabs of the current window as a group, then closes them. Tabs are closed only after the data is safely stored.
+- **Catalog view** — groups sorted by creation time (newest first), inline group renaming, group locking, restore/delete per tab or per group.
+- **By-domain view** — see every saved tab grouped by site (`www.` ignored), with the source group shown next to each tab. Shows the newest N tabs per domain (1/5/10/20, configurable) with expand/collapse.
+- **Search & filters** — live search over titles and URLs, plus Starred and Locked-groups views.
+- **Starred tabs** — star pages you want to revisit; they stay in the list even after being restored.
+- **Home-page decluttering** — root pages like `google.com` or `x.com` are hidden automatically (starred tabs exempt; can be turned off).
+- **Import / Export** — OneTab-compatible text format, plus importing a saved OneTab HTML page with group names and original creation dates preserved.
+- **Themes** — auto (follows your device), light, or dark. Paper-archive design.
+- **5 languages** — English, Español, Français, 한국어, 日本語. Your browser language is detected on first launch.
+- **Private by design** — no backend, no analytics. Everything stays in `chrome.storage.local`. Zero runtime dependencies.
+
+## Install (from source)
+
+1. `npm install && npm run build`
+2. Open `chrome://extensions` and enable **Developer mode**
+3. Click **Load unpacked** and select the `dist/` folder
+
+## Development
 
 ```bash
 npm install
-npm run build     # dist/ 생성
-npm run dev       # watch 빌드
-npm run test      # Vitest 단위 테스트
-npm run check     # svelte-check 타입 검사
+npm run build     # build to dist/
+npm run dev       # watch build
+npm run test      # Vitest unit tests
+npm run check     # svelte-check type checking
 ```
 
-## 크롬에 설치
+Built with Svelte 5 + TypeScript + Vite (Manifest V3, no runtime dependencies).
 
-1. `npm run build`
-2. `chrome://extensions` → 개발자 모드 켜기
-3. "압축해제된 확장 프로그램을 로드합니다" → `dist/` 폴더 선택
+## Structure
 
-## 구조
-
-- `src/background.ts` — 서비스 워커: 탭 수집/저장/닫기
-- `src/storage.ts` — 그룹 CRUD (순수 로직 + chrome.storage 어댑터)
-- `src/importExport.ts` — OneTab 호환 텍스트 파서
-- `src/list/` — Svelte 5 목록 페이지
+- `src/background.ts` — service worker: collect / save / close tabs
+- `src/storage.ts` — group CRUD and settings (pure logic + `chrome.storage` adapters)
+- `src/domain.ts` — domain grouping and home-page hiding (pure logic)
+- `src/importExport.ts` — OneTab-compatible text/HTML parsers
+- `src/i18n.ts` — dependency-free i18n (EN/ES/FR/KO/JA)
+- `src/theme.ts` — auto/light/dark theme resolution
+- `src/list/` — Svelte 5 list page (catalog, by-domain view, settings)
