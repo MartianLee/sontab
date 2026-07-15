@@ -9,6 +9,7 @@
     persistGroups,
     removeGroup,
     removeTab,
+    removeTabs,
     renameGroup,
     toggleLock,
     toggleStar,
@@ -84,14 +85,10 @@
       const opened = await openTab(tab.url);
       if (!opened || tab.starred) keep.add(tab.id);
     }
-    await update((current) => {
-      if (keep.size === 0) return removeGroup(current, group.id);
-      let next = current;
-      for (const tab of group.tabs) {
-        if (!keep.has(tab.id)) next = removeTab(next, group.id, tab.id);
-      }
-      return next;
-    });
+    const toRemove = group.tabs.filter((t) => !keep.has(t.id)).map((t) => t.id);
+    if (toRemove.length > 0) {
+      await update((g) => removeTabs(g, group.id, toRemove));
+    }
   }
 
   function handleImport(text: string): number {

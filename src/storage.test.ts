@@ -6,6 +6,7 @@ import {
   createGroup,
   removeGroup,
   removeTab,
+  removeTabs,
   renameGroup,
   toggleLock,
   toggleStar,
@@ -70,6 +71,28 @@ describe('removeTab', () => {
   it('잠긴 그룹에서는 아무것도 하지 않는다', () => {
     const next = removeTab(fixture(), 'g2', 't3');
     expect(next[1].tabs).toHaveLength(1);
+  });
+});
+
+describe('removeTabs', () => {
+  it('지정한 탭만 제거하고 나머지는 유지한다', () => {
+    const next = removeTabs(fixture(), 'g1', ['t1']);
+    expect(next[0].tabs.map((t) => t.id)).toEqual(['t2']);
+  });
+
+  it('모든 탭을 제거하면 그룹도 제거한다', () => {
+    const next = removeTabs(fixture(), 'g1', ['t1', 't2']);
+    expect(next.map((g) => g.id)).toEqual(['g2']);
+  });
+
+  it('잠긴 그룹에서는 아무것도 하지 않는다', () => {
+    const next = removeTabs(fixture(), 'g2', ['t3']);
+    expect(next[1].tabs).toHaveLength(1);
+  });
+
+  it('빈 목록이면 원본과 동일한 내용을 반환한다', () => {
+    const next = removeTabs(fixture(), 'g1', []);
+    expect(next[0].tabs).toHaveLength(2);
   });
 });
 

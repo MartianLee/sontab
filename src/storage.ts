@@ -20,6 +20,17 @@ export function removeTab(groups: TabGroup[], groupId: string, tabId: string): T
     .filter((g) => g.tabs.length > 0 || g.locked);
 }
 
+export function removeTabs(groups: TabGroup[], groupId: string, tabIds: string[]): TabGroup[] {
+  const ids = new Set(tabIds);
+  return groups
+    .map((g) =>
+      g.id === groupId && !g.locked
+        ? { ...g, tabs: g.tabs.filter((t) => !ids.has(t.id)) }
+        : g,
+    )
+    .filter((g) => g.tabs.length > 0 || g.locked);
+}
+
 export function removeGroup(groups: TabGroup[], groupId: string): TabGroup[] {
   return groups.filter((g) => g.id !== groupId || g.locked);
 }

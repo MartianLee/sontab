@@ -17,7 +17,13 @@
 </script>
 
 <li class="tab-item">
-  <button class="star" class:on={tab.starred} title="즐겨찾기" onclick={onToggleStar}>
+  <button
+    class="star"
+    class:on={tab.starred}
+    title="즐겨찾기"
+    aria-pressed={tab.starred === true}
+    onclick={onToggleStar}
+  >
     {tab.starred ? '★' : '☆'}
   </button>
   {#if tab.favIconUrl}
