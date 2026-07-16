@@ -1,9 +1,36 @@
+import { countDue, nextRemindAt } from './remind';
 import { addGroup, createGroup, loadGroups, persistGroups } from './storage';
 import type { SavedTab } from './types';
 
 const LIST_PATH = 'list.html';
+const REMIND_ALARM = 'sontab-reminders';
 
 let collecting = false;
+
+// 도착한 리마인더 수를 툴바 배지로 보여주고, 다음 도착 시각에 알람을 예약한다
+async function refreshReminders(): Promise<void> {
+  const groups = await loadGroups();
+  const now = Date.now();
+  const due = countDue(groups, now);
+  await chrome.action.setBadgeText({ text: due > 0 ? String(due) : '' });
+  if (due > 0) {
+    await chrome.action.setBadgeBackgroundColor({ color: '#23684d' });
+  }
+  await chrome.alarms.clear(REMIND_ALARM);
+  const next = nextRemindAt(groups, now);
+  if (next !== null) {
+    await chrome.alarms.create(REMIND_ALARM, { when: next });
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => void refreshReminders());
+chrome.runtime.onStartup.addListener(() => void refreshReminders());
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === REMIND_ALARM) void refreshReminders();
+});
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.groups) void refreshReminders();
+});
 
 chrome.action.onClicked.addListener((activeTab) => {
   if (collecting) return;

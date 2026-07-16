@@ -18,6 +18,7 @@
       starred: number;
       locked: number;
       domains: number;
+      later: number;
     };
     settingsOpen: boolean;
     onSelectView: (view: SidebarView) => void;
@@ -68,6 +69,12 @@
       onclick={() => onSelectView('domain')}
     >
       🌐 {t('view.domain')} <span class="count">{counts.domains}</span>
+    </button>
+    <button
+      class:active={!settingsOpen && view === 'later'}
+      onclick={() => onSelectView('later')}
+    >
+      ⏰ {t('view.later')} <span class="count">{counts.later}</span>
     </button>
   </nav>
 

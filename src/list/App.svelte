@@ -20,6 +20,7 @@
     removeTab,
     removeTabs,
     renameGroup,
+    setReminder,
     sortByCreatedAt,
     toggleLock,
     toggleStar,
@@ -34,10 +35,17 @@
   import { groupByDomain, hideMainPages, type DomainEntry } from '../domain';
   import { exportText, parseImport, parseOneTabHtml } from '../importExport';
   import { detectLang, type Lang } from '../i18n';
+  import {
+    countReminders,
+    hideSnoozed,
+    reminderEntries,
+    type ReminderEntry,
+  } from '../remind';
   import { resolveTheme, type ThemeSetting } from '../theme';
   import { locale, t, tc } from './locale.svelte';
   import DomainGroup from './DomainGroup.svelte';
   import Group from './Group.svelte';
+  import ReminderList from './ReminderList.svelte';
   import Settings from './Settings.svelte';
   import Sidebar from './Sidebar.svelte';
 
@@ -49,6 +57,7 @@
   let systemDark = $state(matchMedia('(prefers-color-scheme: dark)').matches);
   let hideMain = $state(true);
   let domainLimit = $state<DomainLimit>(5);
+  let now = $state(Date.now()); // 30초마다 갱신 — 도착한 리마인더를 새로고침 없이 반영
 
   $effect(() => {
     document.documentElement.dataset.theme = resolveTheme(theme, systemDark);
@@ -74,21 +83,35 @@
     void persistDomainLimit(value);
   }
 
-  const effective = $derived(hideMain ? hideMainPages(groups) : groups);
+  const effective = $derived(
+    hideSnoozed(hideMain ? hideMainPages(groups) : groups, now),
+  );
   const visible = $derived(
-    view === 'domain'
+    view === 'domain' || view === 'later'
       ? []
       : filterGroups(byView(effective, view), query),
   );
   const domainGroups = $derived(
     view === 'domain' ? groupByDomain(filterGroups(effective, query)) : [],
   );
+  // '나중에' 뷰는 숨김 규칙과 무관하게 리마인더 걸린 모든 탭을 보여준다
+  const laterEntries = $derived.by(() => {
+    if (view !== 'later') return [];
+    const q = query.trim().toLowerCase();
+    return reminderEntries(groups).filter(
+      (e) =>
+        !q ||
+        e.tab.title.toLowerCase().includes(q) ||
+        e.tab.url.toLowerCase().includes(q),
+    );
+  });
   const counts = $derived({
     tabs: countTabs(effective),
     groups: effective.length,
     starred: countStarred(effective),
     locked: countLockedGroups(effective),
     domains: groupByDomain(effective).length,
+    later: countReminders(groups),
   });
   const viewTitle = $derived(
     view === 'all'
@@ -97,7 +120,9 @@
         ? t('view.starred')
         : view === 'locked'
           ? t('view.locked')
-          : t('view.domain'),
+          : view === 'domain'
+            ? t('view.domain')
+            : t('view.later'),
   );
 
   onMount(() => {
@@ -117,6 +142,7 @@
     const media = matchMedia('(prefers-color-scheme: dark)');
     const onMedia = (e: MediaQueryListEvent) => (systemDark = e.matches);
     media.addEventListener('change', onMedia);
+    const tick = setInterval(() => (now = Date.now()), 30_000);
     const listener = (
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,
@@ -131,6 +157,7 @@
     return () => {
       chrome.storage.onChanged.removeListener(listener);
       media.removeEventListener('change', onMedia);
+      clearInterval(tick);
     };
   });
 
@@ -153,8 +180,12 @@
     const tab = group.tabs.find((t) => t.id === tabId);
     if (!tab) return;
     const opened = await openTab(tab.url);
-    if (opened && !tab.starred) {
+    if (!opened) return;
+    if (!tab.starred) {
       await update((g) => removeTab(g, group.id, tabId));
+    } else if (tab.remindAt !== undefined) {
+      // 열어본 리마인더는 완료 처리 (즐겨찾기라 탭은 목록에 남는다)
+      await update((g) => setReminder(g, group.id, tabId, null));
     }
   }
 
@@ -242,13 +273,35 @@
       <span class="meta">
         {#if view === 'domain'}
           {tc('unit.tab', domainGroups.reduce((n, d) => n + d.entries.length, 0))} · {tc('unit.domain', domainGroups.length)}
+        {:else if view === 'later'}
+          {tc('unit.tab', laterEntries.length)}
         {:else}
           {tc('unit.tab', countTabs(visible))} · {tc('unit.group', visible.length)}
         {/if}
       </span>
     </header>
 
-    {#if view === 'domain'}
+    {#if view === 'later'}
+      {#if laterEntries.length === 0}
+        <p class="empty">
+          {#if query.trim()}
+            {t('empty.search', { query: query.trim() })}
+          {:else}
+            {t('empty.later')}
+          {/if}
+        </p>
+      {:else}
+        <ReminderList
+          entries={laterEntries}
+          {now}
+          onRestoreTab={(e: ReminderEntry) => restoreTab(e.group, e.tab.id)}
+          onDeleteTab={(e: ReminderEntry) => update((g) => removeTab(g, e.group.id, e.tab.id))}
+          onToggleStar={(e: ReminderEntry) => update((g) => toggleStar(g, e.group.id, e.tab.id))}
+          onSetReminder={(e: ReminderEntry, remindAt) =>
+            update((g) => setReminder(g, e.group.id, e.tab.id, remindAt))}
+        />
+      {/if}
+    {:else if view === 'domain'}
       {#if domainGroups.length === 0}
         <p class="empty">
           {#if query.trim()}
@@ -265,6 +318,8 @@
             onRestoreTab={(e: DomainEntry) => restoreTab(e.group, e.tab.id)}
             onDeleteTab={(e: DomainEntry) => update((g) => removeTab(g, e.group.id, e.tab.id))}
             onToggleStar={(e: DomainEntry) => update((g) => toggleStar(g, e.group.id, e.tab.id))}
+            onSetReminder={(e: DomainEntry, remindAt) =>
+              update((g) => setReminder(g, e.group.id, e.tab.id, remindAt))}
           />
         {/each}
       {/if}
@@ -284,6 +339,7 @@
       {#each visible as group (group.id)}
         <Group
           {group}
+          {now}
           onRestoreTab={(tabId) => restoreTab(group, tabId)}
           onDeleteTab={(tabId) => update((g) => removeTab(g, group.id, tabId))}
           onRestoreGroup={() => restoreGroup(group)}
@@ -291,6 +347,8 @@
           onRename={(name) => update((g) => renameGroup(g, group.id, name))}
           onToggleLock={() => update((g) => toggleLock(g, group.id))}
           onToggleStar={(tabId) => update((g) => toggleStar(g, group.id, tabId))}
+          onSetReminder={(tabId, remindAt) =>
+            update((g) => setReminder(g, group.id, tabId, remindAt))}
         />
       {/each}
     {/if}

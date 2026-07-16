@@ -71,6 +71,29 @@ export function toggleStar(groups: TabGroup[], groupId: string, tabId: string): 
   );
 }
 
+export function setReminder(
+  groups: TabGroup[],
+  groupId: string,
+  tabId: string,
+  remindAt: number | null,
+): TabGroup[] {
+  return groups.map((g) =>
+    g.id === groupId
+      ? {
+          ...g,
+          tabs: g.tabs.map((t) => {
+            if (t.id !== tabId) return t;
+            if (remindAt === null) {
+              const { remindAt: _cleared, ...rest } = t;
+              return rest;
+            }
+            return { ...t, remindAt };
+          }),
+        }
+      : g,
+  );
+}
+
 export async function loadGroups(): Promise<TabGroup[]> {
   const data = await chrome.storage.local.get(KEY);
   return (data[KEY] as TabGroup[] | undefined) ?? [];

@@ -5,6 +5,7 @@
 
   let {
     group,
+    now,
     onRestoreTab,
     onDeleteTab,
     onRestoreGroup,
@@ -12,8 +13,10 @@
     onRename,
     onToggleLock,
     onToggleStar,
+    onSetReminder,
   }: {
     group: TabGroup;
+    now: number;
     onRestoreTab: (tabId: string) => void;
     onDeleteTab: (tabId: string) => void;
     onRestoreGroup: () => void;
@@ -21,7 +24,21 @@
     onRename: (name: string) => void;
     onToggleLock: () => void;
     onToggleStar: (tabId: string) => void;
+    onSetReminder: (tabId: string, remindAt: number | null) => void;
   } = $props();
+
+  function dueLabel(remindAt: number | undefined): string {
+    if (remindAt === undefined || remindAt > now) return '';
+    return (
+      '⏰ ' +
+      new Date(remindAt).toLocaleString(locale.lang, {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    );
+  }
 
   let editing = $state(false);
   let draft = $state('');
@@ -76,9 +93,11 @@
     {#each group.tabs as tab (tab.id)}
       <TabItem
         {tab}
+        source={dueLabel(tab.remindAt)}
         onRestore={() => onRestoreTab(tab.id)}
         onDelete={() => onDeleteTab(tab.id)}
         onToggleStar={() => onToggleStar(tab.id)}
+        onRemind={(remindAt) => onSetReminder(tab.id, remindAt)}
         disabled={group.locked}
       />
     {/each}

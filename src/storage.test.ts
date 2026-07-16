@@ -9,6 +9,7 @@ import {
   removeTab,
   removeTabs,
   renameGroup,
+  setReminder,
   toggleLock,
   toggleStar,
 } from './storage';
@@ -54,6 +55,17 @@ describe('addGroup', () => {
     expect(next[0].id).toBe(g.id);
     expect(next).toHaveLength(3);
     expect(groups).toHaveLength(2); // 원본 불변
+  });
+});
+
+describe('setReminder', () => {
+  it('리마인더를 설정하고 null이면 해제한다 (잠긴 그룹에서도 동작)', () => {
+    const groups = fixture();
+    const set = setReminder(groups, 'g2', 't3', 12345); // g2는 잠긴 그룹
+    expect(set[1].tabs[0].remindAt).toBe(12345);
+    const cleared = setReminder(set, 'g2', 't3', null);
+    expect(cleared[1].tabs[0].remindAt).toBeUndefined();
+    expect(groups[1].tabs[0].remindAt).toBeUndefined(); // 원본 불변
   });
 });
 

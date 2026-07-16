@@ -9,12 +9,14 @@
     onRestoreTab,
     onDeleteTab,
     onToggleStar,
+    onSetReminder,
   }: {
     domainGroup: DomainGroup;
     limit: number;
     onRestoreTab: (entry: DomainEntry) => void;
     onDeleteTab: (entry: DomainEntry) => void;
     onToggleStar: (entry: DomainEntry) => void;
+    onSetReminder: (entry: DomainEntry, remindAt: number | null) => void;
   } = $props();
 
   let expanded = $state(false);
@@ -49,6 +51,7 @@
         onRestore={() => onRestoreTab(entry)}
         onDelete={() => onDeleteTab(entry)}
         onToggleStar={() => onToggleStar(entry)}
+        onRemind={(remindAt) => onSetReminder(entry, remindAt)}
         disabled={entry.group.locked}
       />
     {/each}
