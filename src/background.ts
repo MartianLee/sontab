@@ -50,6 +50,7 @@ async function openListPage(windowId: number): Promise<void> {
     await chrome.tabs.update(existing.id, { active: true });
     await chrome.windows.update(existing.windowId, { focused: true });
   } else {
-    await chrome.tabs.create({ url: listUrl, windowId });
+    // 고정 탭은 파비콘 크기로만 표시된다 (OneTab처럼 탭 바 공간 절약)
+    await chrome.tabs.create({ url: listUrl, windowId, pinned: true });
   }
 }
