@@ -12,7 +12,8 @@ Everything needed to fill in the Chrome Web Store developer dashboard.
 | Store icon | `public/icons/icon-128.png` (128×128) |
 | Screenshots (1280×800) | `docs/screenshots/list.png`, `docs/screenshots/by-domain.png` |
 | Small promo tile (440×280) | `docs/store/promo-tile.png` |
-| Privacy policy URL | `PRIVACY.md` — host publicly (GitHub Pages or make the repo public) and paste the URL |
+| Privacy policy URL | https://martianlee.github.io/sontab/privacy.html |
+| Homepage URL | https://martianlee.github.io/sontab/ |
 | Package | `npm run package` → `sontab-v0.1.0.zip` |
 
 ## Short description (≤132 chars)

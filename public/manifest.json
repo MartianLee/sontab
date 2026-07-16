@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
+  "homepage_url": "https://martianlee.github.io/sontab/",
   "permissions": ["tabs", "storage", "unlimitedStorage"],
   "background": { "service_worker": "background.js", "type": "module" },
   "icons": {

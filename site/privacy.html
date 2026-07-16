@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — SonTab</title>
+<meta name="description" content="SonTab privacy policy: all data stays on your device. No server, no network requests, no analytics.">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #faf8f5; --surface: #fffdfa; --border: #e7e1d8;
+    --text: #26221b; --text-muted: #7d756a; --accent: #23684d;
+    --font: system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #161815; --surface: #1e211c; --border: #34382f;
+      --text: #e9e7e1; --text-muted: #a09a8e; --accent: #6fbf95;
+    }
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--font);
+    line-height: 1.7; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 64px; }
+  a { color: var(--accent); }
+  .home { font-size: 14px; text-decoration: none; color: var(--text-muted); }
+  .home:hover { color: var(--text); }
+  h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 24px 0 4px; }
+  .updated { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; font-weight: 700; margin: 32px 0 8px; }
+  p, li { color: var(--text); }
+  ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+  strong { font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .ko h1 { font-size: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="index.html">← SonTab</a>
+
+  <h1>SonTab Privacy Policy</h1>
+  <p class="updated">Last updated: July 16, 2026</p>
+
+  <p>SonTab is a browser extension that saves and restores your tabs. It is designed to be private by default.</p>
+
+  <h2>What data SonTab handles</h2>
+  <p>When you click the SonTab toolbar icon, the extension reads the <strong>URL, title, and favicon</strong> of the tabs in your current window in order to save them as a group. If you use the import feature, the URLs and titles contained in the imported file or text are also stored. Your settings (theme, language, display options) are stored as well.</p>
+
+  <h2>Where the data is stored</h2>
+  <p><strong>All data stays on your device.</strong> Everything is stored locally in your browser's extension storage (<code>chrome.storage.local</code>).</p>
+  <ul>
+    <li>SonTab has <strong>no backend server</strong>.</li>
+    <li>SonTab makes <strong>no network requests</strong>.</li>
+    <li>SonTab includes <strong>no analytics, telemetry, or tracking</strong> of any kind.</li>
+    <li>Your data is <strong>never transmitted, sold, or shared</strong> with anyone.</li>
+  </ul>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li><strong>tabs</strong> — required to read the URL/title of open tabs when you save them and to reopen tabs when you restore them.</li>
+    <li><strong>storage / unlimitedStorage</strong> — required to keep your saved groups and settings on your device without size limits.</li>
+  </ul>
+
+  <h2>Data deletion</h2>
+  <p>Deleting a tab or group inside SonTab removes it from local storage immediately. Uninstalling the extension removes all stored data.</p>
+
+  <h2>Contact</h2>
+  <p>If you have any questions about this policy, please open an issue at
+  <a href="https://github.com/MartianLee/sontab/issues">github.com/MartianLee/sontab/issues</a>.</p>
+
+  <hr>
+
+  <div class="ko" lang="ko">
+    <h1>SonTab 개인정보처리방침</h1>
+    <p>SonTab은 탭을 저장·복원하는 브라우저 확장 프로그램으로, 기본적으로 프라이버시를 보호하도록 설계되었습니다.</p>
+    <ul>
+      <li>툴바 아이콘을 누를 때 현재 창 탭의 <strong>URL·제목·파비콘</strong>을 읽어 그룹으로 저장하며, 설정(테마·언어·표시 옵션)도 함께 저장됩니다.</li>
+      <li><strong>모든 데이터는 사용자의 기기에만</strong> (<code>chrome.storage.local</code>) 저장됩니다.</li>
+      <li>백엔드 서버가 없고, 네트워크 요청을 하지 않으며, 분석·추적 코드가 전혀 없습니다. 데이터를 외부로 전송·판매·공유하지 않습니다.</li>
+      <li>SonTab 안에서 탭/그룹을 삭제하면 즉시 로컬 저장소에서 제거되며, 확장 프로그램을 삭제하면 모든 데이터가 삭제됩니다.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
