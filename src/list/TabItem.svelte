@@ -75,6 +75,8 @@
   <button class="delete" title={t('tab.delete')} onclick={onDelete} disabled={disabled}>×</button>
   {#if menuOpen && presets}
     <div class="remind-menu" role="menu">
+      <button onclick={() => pick(presets.inOneHour)}>{t('remind.in1h')}</button>
+      <button onclick={() => pick(presets.inThreeHours)}>{t('remind.in3h')}</button>
       <button onclick={() => pick(presets.evening)}>{t('remind.evening')}</button>
       <button onclick={() => pick(presets.tomorrowMorning)}>{t('remind.tomorrow')}</button>
       <button onclick={() => pick(presets.nextMonday)}>{t('remind.nextWeek')}</button>

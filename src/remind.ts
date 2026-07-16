@@ -5,8 +5,10 @@ export interface ReminderEntry {
   tab: SavedTab;
 }
 
-/** 스누즈 프리셋: 오늘 저녁 6시(지났으면 내일), 내일 아침 9시, 다음 주 월요일 9시 */
+/** 스누즈 프리셋: 1시간/3시간 뒤, 오늘 저녁 6시(지났으면 내일), 내일 아침 9시, 다음 주 월요일 9시 */
 export function presetTimes(now: Date): {
+  inOneHour: number;
+  inThreeHours: number;
   evening: number;
   tomorrowMorning: number;
   nextMonday: number;
@@ -25,6 +27,8 @@ export function presetTimes(now: Date): {
   nextMonday.setHours(9, 0, 0, 0);
 
   return {
+    inOneHour: now.getTime() + 3600_000,
+    inThreeHours: now.getTime() + 3 * 3600_000,
     evening: evening.getTime(),
     tomorrowMorning: tomorrowMorning.getTime(),
     nextMonday: nextMonday.getTime(),

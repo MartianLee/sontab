@@ -31,6 +31,13 @@ function fixture(): TabGroup[] {
 }
 
 describe('presetTimes', () => {
+  it('1시간 뒤와 3시간 뒤를 준다', () => {
+    const base = new Date(2026, 6, 17, 14, 0);
+    const p = presetTimes(base);
+    expect(p.inOneHour).toBe(base.getTime() + 3600_000);
+    expect(p.inThreeHours).toBe(base.getTime() + 3 * 3600_000);
+  });
+
   it('오후 6시 이전이면 오늘 저녁 6시를 준다', () => {
     const p = presetTimes(new Date(2026, 6, 17, 14, 0));
     expect(new Date(p.evening).getHours()).toBe(18);
