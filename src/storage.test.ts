@@ -7,6 +7,8 @@ import {
   sortByCreatedAt,
   removeGroup,
   removeTab,
+  addGroupTag,
+  removeGroupTag,
   removeTabs,
   renameGroup,
   setReminder,
@@ -66,6 +68,28 @@ describe('setReminder', () => {
     const cleared = setReminder(set, 'g2', 't3', null);
     expect(cleared[1].tabs[0].remindAt).toBeUndefined();
     expect(groups[1].tabs[0].remindAt).toBeUndefined(); // 원본 불변
+  });
+});
+
+describe('addGroupTag / removeGroupTag', () => {
+  it('공백을 정리해 태그를 추가하고 중복은 무시한다', () => {
+    const groups = fixture();
+    let next = addGroupTag(groups, 'g1', '  여행 ');
+    next = addGroupTag(next, 'g1', '여행');
+    next = addGroupTag(next, 'g1', '리서치');
+    expect(next[0].tags).toEqual(['여행', '리서치']);
+    expect(groups[0].tags).toBeUndefined(); // 원본 불변
+  });
+
+  it('빈 태그는 추가하지 않는다', () => {
+    const next = addGroupTag(fixture(), 'g1', '   ');
+    expect(next[0].tags).toBeUndefined();
+  });
+
+  it('태그를 제거하고 마지막 태그면 필드를 없앤다', () => {
+    let next = addGroupTag(fixture(), 'g1', '여행');
+    next = removeGroupTag(next, 'g1', '여행');
+    expect(next[0].tags).toBeUndefined();
   });
 });
 

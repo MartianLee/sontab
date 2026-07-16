@@ -1,13 +1,16 @@
 <script lang="ts">
-  import type { SidebarView } from '../filter';
+  import type { SidebarView, TagCount } from '../filter';
   import { t, tc } from './locale.svelte';
 
   let {
     query = $bindable(''),
     view,
     counts,
+    tags,
+    activeTag,
     settingsOpen,
     onSelectView,
+    onSelectTag,
     onOpenSettings,
   }: {
     query: string;
@@ -20,8 +23,11 @@
       domains: number;
       later: number;
     };
+    tags: TagCount[];
+    activeTag: string | null;
     settingsOpen: boolean;
     onSelectView: (view: SidebarView) => void;
+    onSelectTag: (tag: string) => void;
     onOpenSettings: () => void;
   } = $props();
 </script>
@@ -77,6 +83,20 @@
       ⏰ {t('view.later')} <span class="count">{counts.later}</span>
     </button>
   </nav>
+
+  {#if tags.length > 0}
+    <nav class="views tags" aria-label={t('sidebar.tags')}>
+      <p class="section-label">{t('sidebar.tags')}</p>
+      {#each tags as { tag, count } (tag)}
+        <button
+          class:active={!settingsOpen && view === 'tag' && activeTag === tag}
+          onclick={() => onSelectTag(tag)}
+        >
+          <span class="tag-name">#{tag}</span> <span class="count">{count}</span>
+        </button>
+      {/each}
+    </nav>
+  {/if}
 
   <div class="footer">
     <button class="settings-btn" class:active={settingsOpen} onclick={onOpenSettings}>
@@ -151,6 +171,25 @@
   .count {
     font-size: var(--text-xs);
     color: var(--text-muted);
+  }
+  .tags {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-3);
+    overflow-y: auto;
+  }
+  .section-label {
+    margin: 0 0 var(--space-1);
+    padding: 0 var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tag-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .footer {
     margin-top: auto;

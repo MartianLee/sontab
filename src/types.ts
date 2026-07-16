@@ -14,4 +14,6 @@ export interface TabGroup {
   name: string;
   locked: boolean;
   tabs: SavedTab[];
+  /** 주제 분류용 태그 (사이드바에서 폴더처럼 조회) */
+  tags?: string[];
 }

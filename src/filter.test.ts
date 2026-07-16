@@ -1,6 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import type { TabGroup } from './types';
-import { byView, countLockedGroups, countStarred, filterGroups } from './filter';
+import { allTags, byTag, byView, countLockedGroups, countStarred, filterGroups } from './filter';
+
+describe('allTags / byTag', () => {
+  const tagged: TabGroup[] = [
+    { id: 'a', createdAt: 1, name: '', locked: false, tags: ['여행', '리서치'],
+      tabs: [{ id: 't1', url: 'https://a.com/', title: 'A' }] },
+    { id: 'b', createdAt: 2, name: '', locked: false, tags: ['여행'],
+      tabs: [{ id: 't2', url: 'https://b.com/', title: 'B' }] },
+    { id: 'c', createdAt: 3, name: '', locked: false,
+      tabs: [{ id: 't3', url: 'https://c.com/', title: 'C' }] },
+  ];
+
+  it('태그를 사용 횟수 내림차순(동률이면 사전순)으로 집계한다', () => {
+    expect(allTags(tagged)).toEqual([
+      { tag: '여행', count: 2 },
+      { tag: '리서치', count: 1 },
+    ]);
+  });
+
+  it('해당 태그가 달린 그룹만 반환한다', () => {
+    expect(byTag(tagged, '여행').map((g) => g.id)).toEqual(['a', 'b']);
+    expect(byTag(tagged, '없음')).toEqual([]);
+  });
+});
 
 function fixture(): TabGroup[] {
   return [

@@ -14,6 +14,8 @@
     onToggleLock,
     onToggleStar,
     onSetReminder,
+    onAddTag,
+    onRemoveTag,
   }: {
     group: TabGroup;
     now: number;
@@ -25,7 +27,19 @@
     onToggleLock: () => void;
     onToggleStar: (tabId: string) => void;
     onSetReminder: (tabId: string, remindAt: number | null) => void;
+    onAddTag: (tag: string) => void;
+    onRemoveTag: (tag: string) => void;
   } = $props();
+
+  let addingTag = $state(false);
+  let tagDraft = $state('');
+
+  function commitTag() {
+    const value = tagDraft.trim();
+    addingTag = false;
+    tagDraft = '';
+    if (value) onAddTag(value);
+  }
 
   function dueLabel(remindAt: number | undefined): string {
     if (remindAt === undefined || remindAt > now) return '';
@@ -89,6 +103,33 @@
       <button onclick={onDeleteGroup} disabled={group.locked}>{t('group.delete')}</button>
     </span>
   </header>
+  <div class="tags">
+    {#each group.tags ?? [] as tag (tag)}
+      <span class="chip">
+        #{tag}
+        <button class="chip-x" title={t('tag.remove')} onclick={() => onRemoveTag(tag)}>×</button>
+      </span>
+    {/each}
+    {#if addingTag}
+      <!-- svelte-ignore a11y_autofocus -->
+      <input
+        class="tag-input"
+        bind:value={tagDraft}
+        autofocus
+        placeholder={t('tag.placeholder')}
+        onblur={commitTag}
+        onkeydown={(e) => {
+          if (e.key === 'Enter') commitTag();
+          if (e.key === 'Escape') {
+            addingTag = false;
+            tagDraft = '';
+          }
+        }}
+      />
+    {:else}
+      <button class="add-tag" onclick={() => (addingTag = true)}>+ {t('tag.add')}</button>
+    {/if}
+  </div>
   <ul>
     {#each group.tabs as tab (tab.id)}
       <TabItem
@@ -158,5 +199,65 @@
     list-style: none;
     margin: 0;
     padding: 0;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: var(--text-xs);
+    color: var(--accent);
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 1px var(--space-2);
+  }
+  .chip-x {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: var(--text-xs);
+    color: var(--text-faint);
+    cursor: pointer;
+    visibility: hidden;
+  }
+  .chip:hover .chip-x {
+    visibility: visible;
+  }
+  .chip-x:hover {
+    color: var(--danger);
+  }
+  .add-tag {
+    background: none;
+    border: none;
+    padding: 1px var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-faint);
+    cursor: pointer;
+    border-radius: 999px;
+    visibility: hidden;
+  }
+  .group:hover .add-tag {
+    visibility: visible;
+  }
+  .add-tag:hover {
+    background: var(--surface-hover);
+    color: var(--text-muted);
+  }
+  .tag-input {
+    font: inherit;
+    font-size: var(--text-xs);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 1px var(--space-2);
+    background: var(--bg);
+    color: var(--text);
+    width: 110px;
   }
 </style>

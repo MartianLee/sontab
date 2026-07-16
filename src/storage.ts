@@ -71,6 +71,27 @@ export function toggleStar(groups: TabGroup[], groupId: string, tabId: string): 
   );
 }
 
+export function addGroupTag(groups: TabGroup[], groupId: string, tag: string): TabGroup[] {
+  const trimmed = tag.trim();
+  if (!trimmed) return groups;
+  return groups.map((g) => {
+    if (g.id !== groupId || g.tags?.includes(trimmed)) return g;
+    return { ...g, tags: [...(g.tags ?? []), trimmed] };
+  });
+}
+
+export function removeGroupTag(groups: TabGroup[], groupId: string, tag: string): TabGroup[] {
+  return groups.map((g) => {
+    if (g.id !== groupId || !g.tags) return g;
+    const tags = g.tags.filter((t) => t !== tag);
+    if (tags.length === 0) {
+      const { tags: _cleared, ...rest } = g;
+      return rest;
+    }
+    return { ...g, tags };
+  });
+}
+
 export function setReminder(
   groups: TabGroup[],
   groupId: string,

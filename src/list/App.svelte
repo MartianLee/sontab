@@ -3,6 +3,7 @@
   import type { TabGroup } from '../types';
   import {
     addGroup,
+    addGroupTag,
     countTabs,
     createGroup,
     loadDomainLimit,
@@ -17,6 +18,7 @@
     persistTheme,
     type DomainLimit,
     removeGroup,
+    removeGroupTag,
     removeTab,
     removeTabs,
     renameGroup,
@@ -26,6 +28,8 @@
     toggleStar,
   } from '../storage';
   import {
+    allTags,
+    byTag,
     byView,
     countLockedGroups,
     countStarred,
@@ -58,6 +62,7 @@
   let hideMain = $state(true);
   let domainLimit = $state<DomainLimit>(5);
   let now = $state(Date.now()); // 30초마다 갱신 — 도착한 리마인더를 새로고침 없이 반영
+  let activeTag = $state<string | null>(null);
 
   $effect(() => {
     document.documentElement.dataset.theme = resolveTheme(theme, systemDark);
@@ -86,11 +91,22 @@
   const effective = $derived(
     hideSnoozed(hideMain ? hideMainPages(groups) : groups, now),
   );
-  const visible = $derived(
-    view === 'domain' || view === 'later'
-      ? []
-      : filterGroups(byView(effective, view), query),
-  );
+  const tags = $derived(allTags(groups));
+  const visible = $derived.by(() => {
+    if (view === 'domain' || view === 'later') return [];
+    if (view === 'tag') {
+      return activeTag ? filterGroups(byTag(effective, activeTag), query) : [];
+    }
+    return filterGroups(byView(effective, view), query);
+  });
+
+  // 마지막 그룹에서 태그가 지워지면 태그 뷰를 떠난다
+  $effect(() => {
+    if (view === 'tag' && (!activeTag || !tags.some((t) => t.tag === activeTag))) {
+      view = 'all';
+      activeTag = null;
+    }
+  });
   const domainGroups = $derived(
     view === 'domain' ? groupByDomain(filterGroups(effective, query)) : [],
   );
@@ -122,7 +138,9 @@
           ? t('view.locked')
           : view === 'domain'
             ? t('view.domain')
-            : t('view.later'),
+            : view === 'tag'
+              ? `#${activeTag ?? ''}`
+              : t('view.later'),
   );
 
   onMount(() => {
@@ -241,9 +259,17 @@
     bind:query
     {view}
     {counts}
+    {tags}
+    {activeTag}
     settingsOpen={page === 'settings'}
     onSelectView={(v) => {
       view = v;
+      activeTag = null;
+      page = 'list';
+    }}
+    onSelectTag={(tag) => {
+      activeTag = tag;
+      view = 'tag';
       page = 'list';
     }}
     onOpenSettings={() => (page = 'settings')}
@@ -349,6 +375,8 @@
           onToggleStar={(tabId) => update((g) => toggleStar(g, group.id, tabId))}
           onSetReminder={(tabId, remindAt) =>
             update((g) => setReminder(g, group.id, tabId, remindAt))}
+          onAddTag={(tag) => update((g) => addGroupTag(g, group.id, tag))}
+          onRemoveTag={(tag) => update((g) => removeGroupTag(g, group.id, tag))}
         />
       {/each}
     {/if}
