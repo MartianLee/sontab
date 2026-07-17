@@ -1,4 +1,14 @@
 {
-  "appDesc": { "message": "Un gestionnaire d'onglets léger qui rassemble vos onglets en un seul endroit et économise la mémoire" },
-  "actionTitle": { "message": "Collecter les onglets" }
+  "appDesc": {
+    "message": "Un gestionnaire d'onglets léger qui rassemble vos onglets en un seul endroit et économise la mémoire"
+  },
+  "actionTitle": {
+    "message": "Collecter les onglets"
+  },
+  "cmdCollectWindow": {
+    "message": "Collecter tous les onglets de cette fenêtre"
+  },
+  "cmdCollectTab": {
+    "message": "Envoyer l'onglet actuel vers SonTab"
+  }
 }

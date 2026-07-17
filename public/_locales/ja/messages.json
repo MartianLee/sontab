@@ -1,4 +1,14 @@
 {
-  "appDesc": { "message": "タブを一か所に集めてメモリを節約する軽量タブマネージャー" },
-  "actionTitle": { "message": "タブを集める" }
+  "appDesc": {
+    "message": "タブを一か所に集めてメモリを節約する軽量タブマネージャー"
+  },
+  "actionTitle": {
+    "message": "タブを集める"
+  },
+  "cmdCollectWindow": {
+    "message": "このウィンドウのタブをすべて集める"
+  },
+  "cmdCollectTab": {
+    "message": "現在のタブをSonTabへ送る"
+  }
 }

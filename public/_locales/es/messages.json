@@ -1,4 +1,14 @@
 {
-  "appDesc": { "message": "Un gestor de pestañas ligero que reúne tus pestañas en un solo lugar y ahorra memoria" },
-  "actionTitle": { "message": "Recoger pestañas" }
+  "appDesc": {
+    "message": "Un gestor de pestañas ligero que reúne tus pestañas en un solo lugar y ahorra memoria"
+  },
+  "actionTitle": {
+    "message": "Recoger pestañas"
+  },
+  "cmdCollectWindow": {
+    "message": "Recoger todas las pestañas de esta ventana"
+  },
+  "cmdCollectTab": {
+    "message": "Enviar la pestaña actual a SonTab"
+  }
 }

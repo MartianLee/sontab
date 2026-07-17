@@ -1,4 +1,14 @@
 {
-  "appDesc": { "message": "A lightweight tab manager that gathers your tabs in one place and saves memory" },
-  "actionTitle": { "message": "Collect tabs" }
+  "appDesc": {
+    "message": "A lightweight tab manager that gathers your tabs in one place and saves memory"
+  },
+  "actionTitle": {
+    "message": "Collect tabs"
+  },
+  "cmdCollectWindow": {
+    "message": "Collect all tabs in this window"
+  },
+  "cmdCollectTab": {
+    "message": "Send the current tab to SonTab"
+  }
 }
