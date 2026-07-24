@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <!-- SonTab 마스코트 "탭 쓴 아들" — 탭 모양 모자를 쓴 얼굴 -->
-  <g fill="none" stroke="#26221b" stroke-width="6" stroke-linejoin="round">
-    <circle cx="60" cy="74" r="30" fill="#fdf6ec"/>
-    <path d="M30,56 L30,42 Q30,30 44,30 L76,30 Q90,30 90,42 L90,56 Z" fill="#23684d"/>
-    <circle cx="44" cy="42" r="3.4" fill="#f59f00" stroke="none"/>
-    <circle cx="50" cy="74" r="3.2" fill="#26221b" stroke="none"/>
-    <circle cx="70" cy="74" r="3.2" fill="#26221b" stroke="none"/>
-    <path d="M52,86 Q60,93 68,86" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="40" cy="83" r="4.5" fill="#f59f00" stroke="none" opacity="0.55"/>
-    <circle cx="80" cy="83" r="4.5" fill="#f59f00" stroke="none" opacity="0.55"/>
+  <!-- SonTab 마스코트 "탭 쓴 아들" — 탭 모양 모자를 쓴 얼굴 (파비콘용으로 꽉 찬 구도) -->
+  <g fill="none" stroke="#26221b" stroke-width="8" stroke-linejoin="round">
+    <circle cx="60" cy="70" r="42" fill="#fdf6ec"/>
+    <path d="M18,48 L18,28 Q18,9 36,9 L84,9 Q102,9 102,28 L102,48 Z" fill="#23684d"/>
+    <circle cx="36" cy="28" r="5" fill="#f59f00" stroke="none"/>
+    <circle cx="47" cy="70" r="4.5" fill="#26221b" stroke="none"/>
+    <circle cx="73" cy="70" r="4.5" fill="#26221b" stroke="none"/>
+    <path d="M49,84 Q60,95 71,84" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="34" cy="82" r="6" fill="#f59f00" stroke="none" opacity="0.55"/>
+    <circle cx="86" cy="82" r="6" fill="#f59f00" stroke="none" opacity="0.55"/>
   </g>
 </svg>

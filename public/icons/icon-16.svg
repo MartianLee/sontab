@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- icon-16.png 소스: 16px에서 뭉개지지 않도록 잔디테일을 빼고 이목구비를 키운 변형 -->
+  <g fill="none" stroke="#26221b" stroke-width="10" stroke-linejoin="round">
+    <circle cx="60" cy="70" r="42" fill="#fdf6ec"/>
+    <path d="M18,48 L18,28 Q18,9 36,9 L84,9 Q102,9 102,28 L102,48 Z" fill="#23684d"/>
+    <circle cx="46" cy="68" r="7" fill="#26221b" stroke="none"/>
+    <circle cx="74" cy="68" r="7" fill="#26221b" stroke="none"/>
+    <path d="M51,91 Q60,99 69,91" stroke-width="9" stroke-linecap="round"/>
+  </g>
+</svg>
