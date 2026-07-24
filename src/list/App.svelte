@@ -36,6 +36,7 @@
     filterGroups,
     type SidebarView,
   } from '../filter';
+  import { countDuplicates, removeDuplicates } from '../dedupe';
   import { groupByDomain, hideMainPages, type DomainEntry } from '../domain';
   import { exportText, parseImport, parseOneTabHtml } from '../importExport';
   import { detectLang, type Lang } from '../i18n';
@@ -92,6 +93,7 @@
     hideSnoozed(hideMain ? hideMainPages(groups) : groups, now),
   );
   const tags = $derived(allTags(groups));
+  const duplicates = $derived(countDuplicates(groups));
   const visible = $derived.by(() => {
     if (view === 'domain' || view === 'later') return [];
     if (view === 'tag') {
@@ -219,6 +221,12 @@
     }
   }
 
+  function handleDedupe(): number {
+    const removed = duplicates;
+    if (removed > 0) void update(removeDuplicates);
+    return removed;
+  }
+
   function handleImport(text: string): number {
     const parsed = parseImport(text);
     if (parsed.length > 0) {
@@ -285,10 +293,12 @@
         {theme}
         {hideMain}
         {domainLimit}
+        {duplicates}
         onSetTheme={setTheme}
         onSetHideMain={setHideMain}
         onSetLang={setLang}
         onSetDomainLimit={setDomainLimit}
+        onDedupe={handleDedupe}
         onExport={() => exportText(groups)}
         onImport={handleImport}
         onImportHtml={handleImportHtml}

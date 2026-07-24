@@ -9,10 +9,12 @@
     theme,
     hideMain,
     domainLimit,
+    duplicates,
     onSetTheme,
     onSetHideMain,
     onSetLang,
     onSetDomainLimit,
+    onDedupe,
     onExport,
     onImport,
     onImportHtml,
@@ -21,10 +23,12 @@
     theme: ThemeSetting;
     hideMain: boolean;
     domainLimit: DomainLimit;
+    duplicates: number;
     onSetTheme: (theme: ThemeSetting) => void;
     onSetHideMain: (value: boolean) => void;
     onSetLang: (lang: Lang) => void;
     onSetDomainLimit: (value: DomainLimit) => void;
+    onDedupe: () => number;
     onExport: () => string;
     onImport: (text: string) => number;
     onImportHtml: (html: string) => { groups: number; tabs: number };
@@ -34,6 +38,13 @@
   let section = $state<Section>('general');
   let text = $state('');
   let message = $state('');
+  let generalMessage = $state('');
+
+  function handleDedupe() {
+    const removed = onDedupe();
+    generalMessage =
+      removed > 0 ? t('msg.deduped', { tabs: tc('unit.tab', removed) }) : '';
+  }
 
   const version = chrome.runtime?.getManifest?.().version ?? 'dev';
 
@@ -146,6 +157,17 @@
           aria-label={t('settings.hideMain')}
         />
       </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-name">{t('settings.dedupe')}</div>
+          <div class="setting-desc">{t('settings.dedupeDesc')}</div>
+        </div>
+        <button onclick={handleDedupe} disabled={duplicates === 0}>
+          {t('settings.dedupeRun', { n: duplicates })}
+        </button>
+      </div>
+      {#if generalMessage}<p class="message" role="status">{generalMessage}</p>{/if}
     {:else if section === 'data'}
       <h2>{t('settings.data')}</h2>
 
@@ -270,9 +292,13 @@
     color: var(--text);
     cursor: pointer;
   }
-  .setting-item button:hover,
+  .setting-item button:hover:not(:disabled),
   .file-btn:hover {
     background: var(--surface-hover);
+  }
+  .setting-item button:disabled {
+    opacity: 0.45;
+    cursor: default;
   }
   .file-btn input {
     display: none;

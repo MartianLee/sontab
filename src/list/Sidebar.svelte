@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SidebarView, TagCount } from '../filter';
+  import { estimatedSavedBytes, formatBytes } from '../stats';
   import { t, tc } from './locale.svelte';
 
   let {
@@ -103,6 +104,11 @@
       ⚙ {t('sidebar.settings')}
     </button>
     <p class="summary">{tc('unit.tab', counts.tabs)} · {tc('unit.group', counts.groups)}</p>
+    {#if counts.tabs > 0}
+      <p class="summary memory">
+        {t('summary.memory', { size: formatBytes(estimatedSavedBytes(counts.tabs)) })}
+      </p>
+    {/if}
   </div>
 </aside>
 
@@ -224,6 +230,9 @@
     margin: 0;
     font-size: var(--text-xs);
     color: var(--text-muted);
+  }
+  .memory {
+    color: var(--accent);
   }
   @media (max-width: 720px) {
     aside {
