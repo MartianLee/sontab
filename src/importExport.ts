@@ -90,9 +90,20 @@ export function parseOneTabHtml(html: string): OneTabGroup[] {
     const rawTitle = decodeEntities((block.match(NAME_PATTERN)?.[1] ?? '').trim());
     // 생성일은 그룹 헤더(첫 탭 링크 이전)에만 있다 — 탭 제목 속 날짜 오인 방지
     const headerEnd = block.search(/class="tabLink/);
-    const dateText = decodeEntities(
-      (headerEnd === -1 ? block : block.slice(0, headerEnd)).replace(/<[^>]*>/g, ' '),
-    );
+    const headerHtml = headerEnd === -1 ? block : block.slice(0, headerEnd);
+    // 전용 createdDate 요소가 있으면 그것만 쓰고(내보내기 형식),
+    // 없으면 그룹 이름 스팬 뒤쪽에서만 찾는다 — 날짜처럼 생긴 그룹 이름 오인 방지
+    const dateEl = headerHtml.match(/class="createdDate">([^<]*)</);
+    let dateText: string;
+    if (dateEl) {
+      dateText = decodeEntities(dateEl[1]);
+    } else {
+      const nameMatch = headerHtml.match(NAME_PATTERN);
+      const searchFrom = nameMatch
+        ? headerHtml.indexOf(nameMatch[0]) + nameMatch[0].length
+        : 0;
+      dateText = decodeEntities(headerHtml.slice(searchFrom).replace(/<[^>]*>/g, ' '));
+    }
     groups.push({
       name: AUTO_TITLE.test(rawTitle) ? '' : rawTitle,
       createdAt: parseKoreanDate(dateText),

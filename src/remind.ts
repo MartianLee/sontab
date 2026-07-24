@@ -47,7 +47,7 @@ export function isDue(tab: SavedTab, now: number): boolean {
 export function hideSnoozed(groups: TabGroup[], now: number): TabGroup[] {
   return groups
     .map((g) => ({ ...g, tabs: g.tabs.filter((t) => !isSnoozed(t, now)) }))
-    .filter((g) => g.tabs.length > 0);
+    .filter((g) => g.tabs.length > 0 || g.locked);
 }
 
 /** 리마인더 걸린 모든 탭(예정+도착)을 도착 시각 오름차순으로 */

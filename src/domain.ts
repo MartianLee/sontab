@@ -54,5 +54,5 @@ export function hideMainPages(groups: TabGroup[]): TabGroup[] {
       ...g,
       tabs: g.tabs.filter((t) => t.starred === true || !isMainPageUrl(t.url)),
     }))
-    .filter((g) => g.tabs.length > 0);
+    .filter((g) => g.tabs.length > 0 || g.locked);
 }

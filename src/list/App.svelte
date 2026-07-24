@@ -130,6 +130,9 @@
     locked: countLockedGroups(effective),
     domains: groupByDomain(effective).length,
     later: countReminders(groups),
+    // 보관 현황·메모리 추정은 숨김 여부와 무관한 전체 저장량 기준
+    totalTabs: countTabs(groups),
+    totalGroups: groups.length,
   });
   const viewTitle = $derived(
     view === 'all'
@@ -201,24 +204,50 @@
     if (!tab) return;
     const opened = await openTab(tab.url);
     if (!opened) return;
-    if (!tab.starred) {
+    if (!tab.starred && !group.locked) {
       await update((g) => removeTab(g, group.id, tabId));
     } else if (tab.remindAt !== undefined) {
-      // 열어본 리마인더는 완료 처리 (즐겨찾기라 탭은 목록에 남는다)
+      // 목록에 남는 탭(즐겨찾기·잠긴 그룹)은 열어본 시점에 리마인더 완료 처리
       await update((g) => setReminder(g, group.id, tabId, null));
     }
   }
 
   async function restoreGroup(group: TabGroup) {
-    const keep = new Set<string>();
+    const openedIds = new Set<string>();
     for (const tab of group.tabs) {
-      const opened = await openTab(tab.url);
-      if (!opened || tab.starred) keep.add(tab.id);
+      if (await openTab(tab.url)) openedIds.add(tab.id);
     }
-    const toRemove = group.tabs.filter((t) => !keep.has(t.id)).map((t) => t.id);
-    if (toRemove.length > 0) {
-      await update((g) => removeTabs(g, group.id, toRemove));
+    const toRemove = group.locked
+      ? []
+      : group.tabs
+          .filter((t) => openedIds.has(t.id) && !t.starred)
+          .map((t) => t.id);
+    const removedSet = new Set(toRemove);
+    const toClear = group.tabs
+      .filter(
+        (t) => openedIds.has(t.id) && !removedSet.has(t.id) && t.remindAt !== undefined,
+      )
+      .map((t) => t.id);
+    if (toRemove.length > 0 || toClear.length > 0) {
+      await update((g) => {
+        let next = toRemove.length > 0 ? removeTabs(g, group.id, toRemove) : g;
+        for (const id of toClear) next = setReminder(next, group.id, id, null);
+        return next;
+      });
     }
+  }
+
+  function deleteGroup(group: TabGroup) {
+    // group은 화면용(숨김 적용) 사본 — 저장소 원본과 비교해 숨은 탭을 확인한다
+    const stored = groups.find((g) => g.id === group.id);
+    const hidden = (stored?.tabs.length ?? group.tabs.length) - group.tabs.length;
+    if (
+      hidden > 0 &&
+      !confirm(t('confirm.deleteHidden', { tabs: tc('unit.tab', hidden) }))
+    ) {
+      return;
+    }
+    void update((g) => removeGroup(g, group.id));
   }
 
   function handleDedupe(): number {
@@ -289,7 +318,7 @@
         <h1>{t('settings.title')}</h1>
       </header>
       <Settings
-        counts={{ tabs: counts.tabs, groups: counts.groups }}
+        counts={{ tabs: counts.totalTabs, groups: counts.totalGroups }}
         {theme}
         {hideMain}
         {domainLimit}
@@ -379,7 +408,7 @@
           onRestoreTab={(tabId) => restoreTab(group, tabId)}
           onDeleteTab={(tabId) => update((g) => removeTab(g, group.id, tabId))}
           onRestoreGroup={() => restoreGroup(group)}
-          onDeleteGroup={() => update((g) => removeGroup(g, group.id))}
+          onDeleteGroup={() => deleteGroup(group)}
           onRename={(name) => update((g) => renameGroup(g, group.id, name))}
           onToggleLock={() => update((g) => toggleLock(g, group.id))}
           onToggleStar={(tabId) => update((g) => toggleStar(g, group.id, tabId))}

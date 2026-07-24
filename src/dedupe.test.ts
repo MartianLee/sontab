@@ -70,6 +70,21 @@ describe('removeDuplicates', () => {
   });
 });
 
+describe('removeDuplicates — 리마인더 보호', () => {
+  it('리마인더가 걸린 탭은 제거하지 않고 그쪽을 유지한다', () => {
+    const groups: TabGroup[] = [
+      { id: 'new', createdAt: 2000, name: '', locked: false,
+        tabs: [{ id: 't1', url: 'https://a.com/', title: 'A 최신 (리마인더 없음)' }] },
+      { id: 'old', createdAt: 1000, name: '', locked: false,
+        tabs: [{ id: 't2', url: 'https://a.com/', title: 'A 스누즈', remindAt: 9999999999999 }] },
+    ];
+    const result = removeDuplicates(groups);
+    const ids = result.flatMap((g) => g.tabs.map((t) => t.id));
+    expect(ids).toContain('t2'); // 리마인더 보유 → 유지
+    expect(ids).not.toContain('t1');
+  });
+});
+
 describe('countDuplicates', () => {
   it('정리될 탭 수를 센다', () => {
     // a.com 3개 → 2개 제거, c.com은 별표가 키퍼 → 1개 제거

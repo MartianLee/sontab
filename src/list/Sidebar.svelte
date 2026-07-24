@@ -23,6 +23,8 @@
       locked: number;
       domains: number;
       later: number;
+      totalTabs: number;
+      totalGroups: number;
     };
     tags: TagCount[];
     activeTag: string | null;
@@ -103,10 +105,12 @@
     <button class="settings-btn" class:active={settingsOpen} onclick={onOpenSettings}>
       ⚙ {t('sidebar.settings')}
     </button>
-    <p class="summary">{tc('unit.tab', counts.tabs)} · {tc('unit.group', counts.groups)}</p>
-    {#if counts.tabs > 0}
+    <p class="summary">
+      {tc('unit.tab', counts.totalTabs)} · {tc('unit.group', counts.totalGroups)}
+    </p>
+    {#if counts.totalTabs > 0}
       <p class="summary memory">
-        {t('summary.memory', { size: formatBytes(estimatedSavedBytes(counts.tabs)) })}
+        {t('summary.memory', { size: formatBytes(estimatedSavedBytes(counts.totalTabs)) })}
       </p>
     {/if}
   </div>

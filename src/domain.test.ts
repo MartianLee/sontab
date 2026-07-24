@@ -133,4 +133,15 @@ describe('hideMainPages', () => {
     const result = hideMainPages(groups);
     expect(result.find((g) => g.id === 'g3')?.tabs[0].id).toBe('t4');
   });
+
+  it('잠긴 그룹은 탭이 모두 숨겨져도 목록에서 사라지지 않는다', () => {
+    const locked: TabGroup[] = [
+      {
+        id: 'gl', createdAt: 1, name: '잠김', locked: true,
+        tabs: [{ id: 't', url: 'https://naver.com/', title: '네이버' }],
+      },
+    ];
+    const result = hideMainPages(locked);
+    expect(result.map((g) => g.id)).toEqual(['gl']);
+  });
 });

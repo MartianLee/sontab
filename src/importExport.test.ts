@@ -171,6 +171,23 @@ describe('parseOneTabHtml (저장된 페이지 형식)', () => {
     expect(groups[0].createdAt).toBe(new Date(2026, 6, 3, 20, 12, 0).getTime());
   });
 
+  it('그룹 이름에 날짜가 들어 있어도 생성일로 오인하지 않는다', () => {
+    // 저장된 페이지 형식: 이름 스팬 뒤의 날짜만 생성일이다
+    const saved = `<div class="tabGroup"><div class="tabGroupLabelText"><span class="editInPlaceLabelSpan">20. 1. 1. 오전 9:00 백업</span></div>
+      <div><span>26. 7. 3.</span> <span>오후 8:12</span></div>
+      <div class="tab"><a class="tabLink tabLinkText" href="https://a.com/"><span class="tabLinkText">A</span></a></div></div>`;
+    const g1 = parseOneTabHtml(saved);
+    expect(g1[0].name).toBe('20. 1. 1. 오전 9:00 백업');
+    expect(g1[0].createdAt).toBe(new Date(2026, 6, 3, 20, 12, 0).getTime());
+
+    // 내보내기 형식: createdDate 요소가 있으면 그것만 사용한다
+    const exported = `<div class="tabGroup"><div class="tabGroupTitleText">20. 1. 1. 오전 9:00 백업</div>
+      <div class="createdDate">생성일 2026. 7. 3., 오후 8:12:12</div>
+      <div class="tab"><a class="tabLink" href="https://a.com/">A</a></div></div>`;
+    const g2 = parseOneTabHtml(exported);
+    expect(g2[0].createdAt).toBe(new Date(2026, 6, 3, 20, 12, 12).getTime());
+  });
+
   it('헤더에 날짜가 없으면 생성일은 null이고, 탭 제목 속 날짜는 무시한다', () => {
     const html = `<div class="tabGroup"><div class="tab">
       <a class="tabLink tabLinkText" href="https://a.com/"><span class="tabLinkText">26. 7. 3. 오후 8:12 회의록</span></a>

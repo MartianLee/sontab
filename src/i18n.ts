@@ -97,6 +97,8 @@ const en = {
     'Removes tabs saved with the same URL more than once, keeping the newest copy. Starred tabs and locked groups are kept.',
   'settings.dedupeRun': 'Clean up ({n})',
   'msg.deduped': 'Removed {tabs}.',
+  'confirm.deleteHidden':
+    'This group also contains {tabs} currently hidden (snoozed or home pages). Delete them too?',
   'msg.exported': 'Exported below. Copy the text to use it.',
   'msg.imported': 'Imported {groups}.',
   'msg.importedHtml': 'Imported {groups} ({tabs}).',
@@ -193,6 +195,8 @@ const es: Dict = {
     'Elimina pestañas guardadas con la misma URL más de una vez, conservando la más reciente. Las favoritas y los grupos bloqueados se mantienen.',
   'settings.dedupeRun': 'Limpiar ({n})',
   'msg.deduped': 'Eliminado: {tabs}.',
+  'confirm.deleteHidden':
+    'Este grupo también contiene {tabs} ocultas ahora mismo (pospuestas o páginas de inicio). ¿Eliminarlas también?',
   'msg.exported': 'Exportado abajo. Copia el texto para usarlo.',
   'msg.imported': 'Importado: {groups}.',
   'msg.importedHtml': 'Importado: {groups} ({tabs}).',
@@ -286,6 +290,8 @@ const fr: Dict = {
     'Supprime les onglets enregistrés plusieurs fois avec la même URL, en gardant le plus récent. Les favoris et les groupes verrouillés sont conservés.',
   'settings.dedupeRun': 'Nettoyer ({n})',
   'msg.deduped': 'Supprimé : {tabs}.',
+  'confirm.deleteHidden':
+    'Ce groupe contient aussi {tabs} actuellement masqués (rappels ou pages d’accueil). Les supprimer aussi ?',
   'msg.exported': 'Exporté ci-dessous. Copiez le texte pour l’utiliser.',
   'msg.imported': 'Importé : {groups}.',
   'msg.importedHtml': 'Importé : {groups} ({tabs}).',
@@ -377,6 +383,8 @@ const ko: Dict = {
     '같은 URL로 여러 번 저장된 탭을 최신 것만 남기고 정리합니다. 즐겨찾기(★)와 잠긴 그룹은 유지됩니다.',
   'settings.dedupeRun': '정리 ({n})',
   'msg.deduped': '{tabs}를 정리했습니다.',
+  'confirm.deleteHidden':
+    '이 그룹에는 지금 숨겨져 있는 {tabs}가 더 있습니다(리마인더 예정·메인 페이지). 함께 삭제할까요?',
   'msg.exported': '아래 상자에 내보냈습니다. 복사해 사용하세요.',
   'msg.imported': '{groups}를 가져왔습니다.',
   'msg.importedHtml': '{groups}({tabs})를 가져왔습니다.',
@@ -469,6 +477,8 @@ const ja: Dict = {
     '同じURLで複数回保存されたタブを、最新のものだけ残して整理します。お気に入り(★)とロック中のグループは保持されます。',
   'settings.dedupeRun': '整理 ({n})',
   'msg.deduped': '{tabs}を整理しました。',
+  'confirm.deleteHidden':
+    'このグループには現在非表示の{tabs}があります(リマインダー・トップページ)。一緒に削除しますか?',
   'msg.exported': '下の欄に出力しました。コピーしてご利用ください。',
   'msg.imported': '{groups}をインポートしました。',
   'msg.importedHtml': '{groups}({tabs})をインポートしました。',

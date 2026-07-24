@@ -93,9 +93,8 @@ function run(job: () => Promise<void>): void {
     });
 }
 
-/** 저장이 성공한 뒤에만 탭을 닫는다 (실패 시 탭 유지 = 데이터 유실 방지) */
-async function saveAndClose(tabs: chrome.tabs.Tab[], name = ''): Promise<void> {
-  if (tabs.length === 0) return;
+/** 저장만 한다 — 탭 닫기는 호출자가 창 생존을 보장한 뒤 수행 */
+async function saveGroup(tabs: chrome.tabs.Tab[], name = ''): Promise<void> {
   const saved: SavedTab[] = tabs.map((t) => ({
     id: crypto.randomUUID(),
     url: t.url!,
@@ -104,10 +103,14 @@ async function saveAndClose(tabs: chrome.tabs.Tab[], name = ''): Promise<void> {
   }));
   const groups = await loadGroups();
   await persistGroups(addGroup(groups, { ...createGroup(saved, Date.now()), name }));
-  await chrome.tabs.remove(tabs.map((t) => t.id!));
 }
 
-/** 툴바 클릭/단축키: 창 전체 수집 후 목록 페이지 열기 */
+/**
+ * 툴바 클릭/단축키: 창 전체 수집.
+ * 순서 중요 — 저장 → 목록 페이지 열기 → 탭 닫기.
+ * 목록 페이지를 먼저 열어야 마지막 탭을 닫아도 창이 살아남고,
+ * 저장이 실패하면 탭을 닫지 않아 데이터가 유실되지 않는다.
+ */
 async function collectWindow(windowId: number): Promise<void> {
   const listUrl = chrome.runtime.getURL(LIST_PATH);
   const tabs = await chrome.tabs.query({ windowId });
@@ -116,18 +119,26 @@ async function collectWindow(windowId: number): Promise<void> {
   );
 
   if (collectible.length > 0) {
-    await saveAndClose(collectible);
+    await saveGroup(collectible);
   }
   await openListPage(windowId);
+  if (collectible.length > 0) {
+    await chrome.tabs.remove(collectible.map((t) => t.id!));
+  }
 }
 
 /** 컨텍스트 메뉴/단축키: 부분 수집 — 조용히 보관만 하고 목록 페이지는 열지 않는다 */
 async function sendTabs(clicked: chrome.tabs.Tab, mode: CollectMode): Promise<void> {
   const listUrl = chrome.runtime.getURL(LIST_PATH);
   const all = await chrome.tabs.query({ windowId: clicked.windowId });
-  const selected = selectTabsToSend(all, clicked, mode, listUrl);
-  const name = mode === 'domain' ? domainOf(clicked.url ?? '') : '';
-  await saveAndClose(selected as chrome.tabs.Tab[], name);
+  const selected = selectTabsToSend(all, clicked, mode, listUrl) as chrome.tabs.Tab[];
+  if (selected.length === 0) return;
+  await saveGroup(selected, mode === 'domain' ? domainOf(clicked.url ?? '') : '');
+  // 창의 모든 탭을 보내는 경우엔 창이 닫히지 않도록 목록 페이지를 먼저 연다
+  if (selected.length === all.length) {
+    await openListPage(clicked.windowId);
+  }
+  await chrome.tabs.remove(selected.map((t) => t.id!));
 }
 
 async function openListPage(windowId: number): Promise<void> {

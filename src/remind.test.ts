@@ -81,6 +81,16 @@ describe('hideSnoozed', () => {
     expect(result.map((g) => g.id)).toEqual(['g1']);
     expect(result[0].tabs.map((t) => t.id)).toEqual(['t1', 't3']);
   });
+
+  it('잠긴 그룹은 탭이 모두 스누즈돼도 목록에서 사라지지 않는다', () => {
+    const locked: TabGroup[] = [
+      {
+        id: 'gl', createdAt: 1, name: '', locked: true,
+        tabs: [{ id: 't', url: 'https://a.com/', title: 'A', remindAt: NOW + 1000 }],
+      },
+    ];
+    expect(hideSnoozed(locked, NOW).map((g) => g.id)).toEqual(['gl']);
+  });
 });
 
 describe('reminderEntries', () => {
